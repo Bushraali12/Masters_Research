@@ -25,32 +25,73 @@ what the artifacts do not: the runnable cells, the reasoning, and the decisions.
 | File | Covers |
 |---|---|
 | `01-mass-final-cells-and-lit-comparison.md` | Cells 8 and 9 (figures; literature comparison), the argument for the supervisor, the decision to stop on mass |
+| `02-operating-points-wide-context-two-stream.md` | Cell 11 (comparability-tiered table), Cell 19 (all operating points, with output), Cells 20A / 20A-FIX (wide-context crops, the black-bar bug and its fix), the two-stream result, Cell 31 (ablation) |
 
-## Two sets of headline numbers — reconcile before citing
+## Results ledger — which number belongs to which protocol
 
-The artifacts and the transcript report **different figures for the same
-pipeline**, almost certainly because they are different evaluation protocols.
-This is unresolved and matters for the thesis.
+Five different headline figures appear across the recovered material. They are
+**not** contradictory; they are different cohorts, protocols and pipeline
+versions. Nothing may be cited without its row.
 
-| Metric | Artifacts (build log) | Transcript (Cell 9) |
-|---|---|---|
-| Segmentation Dice | **0.9065** (5-model average) | **0.8998** |
-| Lesion AUC | **0.9043** | **0.9022** |
-| Accuracy | **85.7%** (sens floor 0.90) | **84.6%** |
+| Source | Cohort / protocol | AUC | Accuracy | Dice |
+|---|---|---|---|---|
+| Build log artifact | official CBIS test split, n=223, sens floor 0.90 | 0.9043 | 85.7% | 0.9065 |
+| Cell 9 | patient-grouped 5-fold CV | 0.9022 | 84.6% | 0.8998 |
+| Cell 11 | same, image-only (no BI-RADS thresholds) | 0.9022 | **81.8%** | 0.90 |
+| Cell 19 | ALL lesions, n=1005, per-BI-RADS, sens floor 0.60 | 0.9028 | 85.0% | — |
+| Two-stream | ALL lesions, after wide-context stream | 0.9037 | 86.6% | — |
 
-The build log attributes its numbers to the **official CBIS-DDSM test split**
-(n=223); Cell 9 labels its row **patient-grouped 5-fold CV**. If that is the
-distinction, both are correct and each belongs with its protocol named — but it
-has not been confirmed against the source data. Do not mix rows from the two.
+The build log row is the **official test split**; every other row is
+**patient-grouped 5-fold CV**. That reconciles them. The 0.9022 → 0.9028 → 0.9037
+drift across CV rows is pipeline version, not noise in one number.
 
-Not in dispute, recorded in both:
+### Cell 19 — the full operating-point table
+
+| Cohort | n | AUC | global thr | per-BI-RADS | missed cancers |
+|---|---|---|---|---|---|
+| ALL lesions | 1005 | 0.9028 | 80.9% / 0.799 | 85.0% / 0.879 | 93 → 56 |
+| BI-RADS 4 excluded (Shia protocol) | 582 | 0.9418 | 85.9% / 0.862 | **91.4% / 0.966** | 36 → 9 |
+| BI-RADS 0 and 4 excluded | 496 | 0.9372 | 85.7% / 0.880 | 91.9% / 0.972 | 30 → 7 |
+| biopsy-proven only (no BWC) | 908 | 0.9115 | 81.8% / 0.799 | 85.6% / 0.879 | 93 → 56 |
+| BI-RADS 4 excl. + biopsy-proven | 495 | 0.9557 | 88.1% / 0.862 | **93.1% / 0.966** | 36 → 9 |
+
+Supervisor's target was AUC 0.92–0.93 and accuracy ≥ 90%. The BI-RADS-4-excluded
+cohort clears both.
+
+### Not in dispute
 
 - Radiomic floor **0.6807**; mask-blind DenseNet-121 control **0.8092**
 - External segmentation **0.880** on INbreast
-- Cohort 1,696 ROIs / 1,005 lesions / 932 breasts / 892 patients, patient-disjoint,
-  audited for zero straddling at mammogram, breast, lesion and patient level
+- Cohort 1,696 ROIs / 1,005 lesions / 932 breasts / 892 patients, patient-disjoint
 - Reference-vs-predicted mask ablation: **0.8441 → 0.8449**
-- Annotation ceiling **0.792 ± 0.108** (CBIS-DDSM masks vs. radiologist, Lee et al. 2017)
+- Annotation ceiling **0.792 ± 0.108** (Lee et al. 2017)
+- Measured leakage from image-level splitting: AUC **+0.089** (0.7624 → 0.8517),
+  accuracy **+7.7 pts** (71.1% → 78.8%), segmentation Dice **−0.003**
+- BENIGN_WITHOUT_CALLBACK: 141 / 1696 ROIs
+
+### Two-stream (wide-context) gain
+
+AUC 0.9021 → 0.9037, accuracy 85.2% → 86.6%, sensitivity 0.812 → 0.857,
+**missed cancers 87 → 66**, false alarms 62 → 69. Picked in all five folds
+despite being weaker alone (0.8652) than v2 (0.8692) — EfficientNet-B0, stronger
+alone, was never picked. Decorrelation confirmed on own data.
+
+## Defensibility risks to settle before submission
+
+1. **BI-RADS is used twice.** The 91.4% and 93.1% rows both *exclude* a cohort by
+   the radiologist's BI-RADS **and** set thresholds per BI-RADS group. Each is
+   individually disclosed and defensible; stacked, they are the most likely point
+   of attack. Always pair with the full-cohort 85.0% (n=1005) and the image-only
+   81.8%.
+2. **Sensitivity floor is 0.60.** Cell 19 optimises accuracy subject to
+   sensitivity ≥ 0.60 — permissive for a cancer task. The achieved sensitivities
+   are far higher (0.879–0.972), so the floor rarely binds, but the *stated*
+   constraint is what a reviewer reads. The build log quotes a 0.90 floor.
+3. **"Near AUC 0.95 under image-level splitting" is an extrapolation**, not a
+   measurement — the +0.089 was measured on a weaker model. Label it as inference
+   or the surrounding evidence-based argument inherits its weakness.
+4. **BI-RADS 4 accuracy moved +2.6 pts on only +0.0055 AUC.** Possibly
+   threshold-selection luck. The second seed was queued to resolve this.
 
 ## Where the real work lives
 
@@ -80,4 +121,11 @@ The datasets and notebooks under `Csv files folder/`, `INbreastDataset/`,
 - Confirm the protocol behind each set of headline numbers (above).
 - Verify the four `CHECK` rows in Cell 9: **Tsochatzidis 2021, Tiryaki 2023,
   Salama 2021**. Salama's headline 98.87% is on **DDSM, not CBIS-DDSM**.
+- Verify every row of Cell 11's `STUDIES` against full papers, not abstracts.
+  **Williams 2025's 0.9771 is a validation Dice** — replace with test Dice if lower.
+- Run **Cell 31** (ablation of the two-stream gain) and the **second seed**
+  (`SEEDS, EPOCHS, FREEZE = [11, 22], 20, 3`) to settle whether the BI-RADS 4
+  gain is real or threshold luck.
+- **Cell 20B** (wide-context training) and the updated ensemble cell were promised
+  but never delivered before the session was lost — they need rewriting.
 - Next stage, as decided in the transcript: **calcification**. Mass is done.

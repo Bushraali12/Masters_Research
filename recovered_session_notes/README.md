@@ -26,6 +26,7 @@ what the artifacts do not: the runnable cells, the reasoning, and the decisions.
 |---|---|
 | `01-mass-final-cells-and-lit-comparison.md` | Cells 8 and 9 (figures; literature comparison), the argument for the supervisor, the decision to stop on mass |
 | `02-operating-points-wide-context-two-stream.md` | Cell 11 (comparability-tiered table), Cell 19 (all operating points, with output), Cells 20A / 20A-FIX (wide-context crops, the black-bar bug and its fix), the two-stream result, Cell 31 (ablation) |
+| `03-ensemble-provenance-and-session-death.md` | The canonical ensemble number 0.9078, the conflicting archive-file cluster, the rebuild-from-primary-artifacts cell, and the diagnosed cause of the session failure |
 
 ## Results ledger — which number belongs to which protocol
 
@@ -40,6 +41,7 @@ versions. Nothing may be cited without its row.
 | Cell 11 | same, image-only (no BI-RADS thresholds) | 0.9022 | **81.8%** | 0.90 |
 | Cell 19 | ALL lesions, n=1005, per-BI-RADS, sens floor 0.60 | 0.9028 | 85.0% | — |
 | Two-stream | ALL lesions, after wide-context stream | 0.9037 | 86.6% | — |
+| Rebuilt ensemble | seven-model, pooled — **claimed canonical** | 0.9078 | — | — |
 
 The build log row is the **official test split**; every other row is
 **patient-grouped 5-fold CV**. That reconciles them. The 0.9022 → 0.9028 → 0.9037
@@ -92,6 +94,13 @@ alone, was never picked. Decorrelation confirmed on own data.
    or the surrounding evidence-based argument inherits its weakness.
 4. **BI-RADS 4 accuracy moved +2.6 pts on only +0.0055 AUC.** Possibly
    threshold-selection luck. The second seed was queued to resolve this.
+5. **Four archive files disagree about the ensemble AUC** —
+   `mass_lesion_errors_clean.csv` 0.9078 (and 0.9116 on another reading),
+   `_final.csv` 0.9103, `_real.csv` 0.9145 fold-averaged. 0.9078 matches the
+   earlier comparison-tables document and is the working answer; 0.9090 in the
+   handoff notes was transcription drift. **Do not cite any of them until the
+   rebuild cell in excerpt 03 reproduces the number from primary OOF files.**
+   This is the blocking item for Section 5.4 of the manuscript.
 
 ## Where the real work lives
 
@@ -99,6 +108,23 @@ alone, was never picked. Decorrelation confirmed on own data.
 `/root/autodl-tmp/CBIS` — folds (`unified_folds_mass.csv`), predicted masks
 (`predmasks_mass/`), out-of-fold probabilities (`cv_mass_v2_oof.csv`), figures
 (`figures/mass_final/`). Nothing on that server was affected by the session loss.
+
+## Why the session died
+
+Its environment was pinned to `Bushraali12/Masters-Research-` as its source
+repository. That repo was **deleted**, so every container restart failed at
+`chdir /home/user/Masters-Research-: no such file or directory` before Claude
+Code could start. Every "An API error occurred" was that startup failure.
+
+The repo has since been restored (verified: `main` at `7c9d46ad`, readable
+anonymously), but restoring a repo does not restore the GitHub App's
+repository-access grant, so authenticated clones can still 404. Re-granting at
+https://github.com/settings/installations is the one fix worth trying — though
+the session stays pinned to the wrong repo either way.
+
+**Where work belongs now:** `Bushraali12/Masters_Research` (underscore), per the
+author's own instruction. `Bushraali12/Masters_Research_` is a false start and
+resolves to nothing.
 
 ## What was NOT recovered
 
@@ -128,4 +154,8 @@ The datasets and notebooks under `Csv files folder/`, `INbreastDataset/`,
   gain is real or threshold luck.
 - **Cell 20B** (wide-context training) and the updated ensemble cell were promised
   but never delivered before the session was lost — they need rewriting.
+- Run the rebuild cell in excerpt 03 and settle which archive file is canonical
+  before Section 5.4 of the manuscript can be finished. **This is the blocking item.**
+- Locate the manuscript files — recorded as "delivered and living outside the
+  repo", so they are not covered by this recovery and have no durable home yet.
 - Next stage, as decided in the transcript: **calcification**. Mass is done.

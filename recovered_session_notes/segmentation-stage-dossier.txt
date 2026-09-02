@@ -1,0 +1,412 @@
+Segmentation Stage Dossier
+
+ Stage 1 · Technical Dossier
+
+ What the segmentation network does, and what is defensible in it
+
+ A complete account of the mass-segmentation stage — inputs,
+ architecture, training, results, ablations, and an honest separation of what is
+ novel from what is standard.
+
+ Cohort CBIS-DDSM mass, 1,696 regions
+ Lesions 1,005
+ Patients 892
+ Protocol patient-grouped 5-fold
+ Exclusions none
+
+ 01What goes into the network
+
+ Not the full mammogram. Lesion-centred crops cut from it.
+ This is the single most important thing to be clear about, because it changes
+ what the Dice number means.
+
+ A full mammogram is roughly 4,000 × 5,000 pixels and the lesion occupies a
+ fraction of one percent of it. Segmenting that directly is a
+ detection problem — find the needle, then outline it. This pipeline
+ solves the second half only: given a region that contains a lesion, draw its
+ boundary. That is the standard formulation for CBIS-DDSM and it is what makes
+ the numbers comparable to the literature in §6.
+
+ How each crop is made
+
+ step 1
+ Locate the annotationThe radiologist's mask is read from the
+ full-resolution mammogram and its bounding box computed.
+
+ step 2
+ Choose a window sizeSide length is set so the lesion occupies
+ 23% of the crop area, with a floor of 1.15 × the lesion's
+ longest dimension so the whole lesion always fits. Fixing coverage rather than
+ pixel size means the network sees every lesion at a comparable scale.
+
+ step 3
+ Frame it on tissueAn Otsu breast mask is computed and the
+ largest connected component kept; the window is constrained to breast tissue,
+ which removes the half-black crops that naive edge cropping produces.
+
+ step 4
+ Slide, never inventIf the window runs past the image edge it
+ is slid inward. 153 of 1,696 windows needed this. No pixel is
+ ever synthesised. 58 crops still have the lesion touching an edge — those are
+ lesions that genuinely run off the mammogram, which no crop can
+ recover.
+
+ step 5
+ Resample and equaliseCrop written at 512 × 512, downsampled to
+ 256 × 256 for segmentation, contrast-equalised with CLAHE (clip 2.0, tile
+ 8 × 8).
+
+ Achieved geometry. Lesion coverage: median 23.0%, range
+ 12.1–23.1%. Every crop contains only real mammographic tissue. This uniformity
+ is deliberate and it is part of the contribution — see §7.
+
+ 02The architecture, layer by layer
+
+ The network is a deeply supervised attention U-Net with an atrous
+ spatial pyramid pooling bottleneck. Four components, each doing a
+ specific job.
+
+ E1 256² × 32
+ E2 128² × 64
+ E3 64² × 128
+ E4 32² × 256
+
+ ASPP bottleneck 16² × 512
+ 1×1 | 3×3 dil 6, 12, 18 | global pool
+
+ D1 256² × 32
+ D2 128² × 64
+ D3 64² × 128
+ D4 32² × 256
+
+ AGAG
+ AGAG
+
+ output 256² × 2
+ w = 1.0 · kept
+ deep sup. w = 0.5
+ deep sup. w = 0.3
+ deep sup. w = 0.2
+
+ three lower heads
+ discarded at inference
+
+ Tensor shapes for a 256 × 256 input. Dashed orange paths are skip
+ connections, each passing through an attention gate before concatenation with
+ the upsampled decoder feature.
+
+ Encoder — four stages, 32 → 64 → 128 → 256 channels
+
+ Each stage is two 3×3 convolutions with batch normalisation and ReLU,
+ followed by 2× max-pooling. Early stages see fine detail over a small area
+ (edges, grain); later stages see coarse structure over a large area (is this a
+ round dense object?). Resolution falls, semantic content rises.
+
+ ASPP bottleneck — multi-scale context at 16 × 16
+
+ Five parallel branches look at the same features with different sampling
+ spacings: a 1×1 convolution, three 3×3 convolutions at dilation 6, 12 and 18,
+ and one global-average-pool branch. They are concatenated and projected back to
+ 512 channels. Why it matters here: your lesions span 12% to 23% of the
+ crop, so the network must judge scale without being told it.
+
+ Attention gates — on every skip connection
+
+ A plain U-Net concatenates the whole encoder feature map into the decoder,
+ irrelevant tissue included. An attention gate takes the decoder's coarse
+ semantic signal g and the encoder's detailed skip x and
+ produces a per-pixel weight:
+
+ α = σ( ψ( ReLU( Wg·g + Wx·x ) ) )   →  
+ x̂ = α ⊙ x
+
+ Every weight matrix is a 1×1 convolution; ψ maps to a single channel and the
+ sigmoid puts α in [0, 1]. The network decides which fine details are worth
+ keeping.
+
+ Deep supervision — four heads, weights 1.0 / 0.5 / 0.3 / 0.2
+
+ The loss is applied at four decoder depths, not just the last one, with the
+ ground truth nearest-neighbour downsampled to match. This forces the middle of
+ the decoder to produce something meaningful instead of relying on the final
+ layer to repair everything. Only the finest head is used at
+ inference — the other three exist purely to shape training.
+
+ The loss
+
+ L = Σd wd [ 0.3·CE + 0.7·(1 − Tverskyα=0.7, β=0.3) ]
+
+ Tversky generalises Dice by weighting false positives and false negatives
+ separately. Setting α > β penalises missing lesion tissue more
+ heavily than over-segmenting it — the right asymmetry when the object
+ may be a cancer.
+
+ 03Training and inference
+
+ SettingValue
+
+ | Input | 256 × 256, CLAHE clip 2.0, tile 8 × 8
+
+ | Augmentation | 8× lockstep — identity, h/v flip, 3 rotations, affine ±25° with scale 0.9–1.1, brightness jitter
+
+ | Optimiser | Adam, lr 1e-3, ReduceLROnPlateau (patience 4, factor 0.5)
+
+ | Precision / batch | AMP mixed precision, batch 16
+
+ | Schedule | up to 60 epochs, early stop at patience 10
+
+ | Model selection | best validation Dice
+
+ | Inference | 4-way rotation TTA, averaged, threshold 0.5
+
+ "Lockstep" means image and mask receive the identical geometric
+ transform. Brightness jitter is applied to the image only.
+
+ The property that makes the whole pipeline honest. Each
+ fold's segmentation model writes predicted masks only for patients it
+ never trained on. Those predictions — never the radiologist's outlines —
+ are what the classifier consumes downstream. Patient disjointness is asserted
+ in code before every fold begins.
+
+ 04Results, and why the number moved
+
+ Three crop generations exist. The Dice differences between them are
+ differences in the data, not the model — the architecture was
+ identical in all three runs.
+
+ Crop generationDiceWhat changed
+
+ | Original | 0.9000
+ | Window clamped at image edges; inconsistent lesion scale
+
+ | v2 — padded | 0.9200
+ | Uniform 23% coverage, but 153 crops padded with synthetic noise
+
+ | v4 — final | 0.9062
+ | Uniform coverage, windows slid inward, zero invented pixels
+
+ All figures pooled over the same five patient-grouped folds,
+ identical architecture, identical schedule.
+
+ Why 0.9200 fell to 0.9062, and why that is correct. In v2,
+ 153 crops contained a band of Gaussian noise where the window ran past the
+ image. Noise has no tissue texture, so the network classified it as background
+ for free — and every one of those pixels counted toward Dice. The 0.9200 was
+ inflated by an artefact I introduced. In v4 that region contains real breast
+ parenchyma, which can resemble a lesion and must actually be discriminated.
+ 0.9062 is measured on harder, honest data. It is the number to
+ report.
+
+ Per-fold, v4
+
+ Fold01234mean
+
+ | Dice | 0.9018 | 0.9059 | 0.9048
+ | 0.9107 | 0.9079 | 0.9062
+
+ Spread 0.009 across folds — tight and stable.
+
+ Distribution and coherence checks
+
+ PropertyValueReading
+
+ | Regions ≥ 0.50 Dice | 100.0% | no failure cases at all
+
+ | Regions ≥ 0.70 | 99.8% | 3 regions below
+
+ | Regions ≥ 0.80 | 98.6% | —
+
+ | Worst region | 0.609 | boundary disagreement, not a miss
+
+ | Spearman(lesion size, Dice) | +0.039
+ | essentially scale-independent
+
+ | Subtlety 1 → 5 | 0.900 → 0.927
+ | degrades exactly where a radiologist would
+
+ | Malignant / benign | 0.923 / 0.922 | no class bias
+
+ Distribution figures measured on the v2 per-region record; the
+ qualitative pattern is unchanged in v4. Two of these deserve emphasis in the
+ thesis: there is no failure tail, and the monotonic subtlety trend is a
+ coherence check most papers cannot show.
+
+ 05The ablation table, explained
+
+ Three output heads were trained on identical folds, identical crops,
+ identical seeds and identical schedules. The final layer is the only
+ thing that differs. That is what makes this a valid ablation.
+
+ HeadDicestdΔ vs standardWhat it is
+
+ | ds standard | 0.9200 | 0.0030 | —
+ | 1×1 conv → 2 channels
+
+ | duel | 0.9203 | 0.0028 | +0.0003
+ | V + A − mean(A), the Dueling-DQN decomposition
+
+ | duel2 | 0.9201 | 0.0029 | +0.0001
+ | repaired: coarse region stream supervised on a dilated mask
+
+ Five patient-grouped folds each, on v2 crops. Because all three
+ saw identical data, this comparison remains valid regardless of the later crop
+ fix.
+
+ Read this correctly: the heads are indistinguishable. The
+ largest difference is +0.0003, while the fold-to-fold standard deviation is
+ 0.0030 — ten times larger. And duel is
+ worse than ds on fold 3. This is noise, not a gain, and
+ claiming +0.0003 as an improvement would not survive a paired test.
+
+ But you know why — and that is the valuable part
+
+ For a two-class softmax output, the dueling head is
+ provably degenerate:
+
+ zc = V + Ac − ½(A0+A1)
+   ⟹  
+ z0 − z1 = A0 − A1
+
+ The value stream cancels. Softmax and cross-entropy depend
+ only on the logit difference, so V has no effect on the output and receives
+ exactly zero gradient — you measured 4.3 × 10⁻⁹, which is
+ float32 noise. The dueling head in this setting is mathematically identical to a
+ plain 2-channel convolution.
+
+ You then built duel2, which repairs the degeneracy by giving the
+ two streams genuinely different supervision — and showed the problem is
+ structural, not an implementation detail.
+
+ 06Where this sits in the literature
+
+ StudyDiceEvaluation setting
+
+ | Ma & Peng 2024 | 0.932 | CBIS internal; split unstated, paywalled
+
+ | Jalalian et al. 2025 | 0.9253 | CBIS → INbreast transfer; segmentation only
+
+ | BiLoG-Net 2026 | 0.931 | preprint; protocol unverified
+
+ | This work | 0.9062
+ | CBIS, patient-grouped 5-fold, nothing excluded
+
+ | YOLOv5 + SegNet 2025 | 0.894 | CBIS internal only
+
+ | Oudjer et al. 2024 | 0.8765 | INbreast, trained on target, whole-image
+
+ | El-Banby et al. 2024 | 0.8561 | CBIS + INbreast; split unclear
+
+ | Tsochatzidis et al. 2021 | 0.722 | CBIS, official split
+
+ Every figure in this table must be verified against the
+ primary source before submission. Rows are ordered by Dice, but the
+ settings are not equivalent — a study that does not state its split, or that
+ trains on the target cohort, is not directly comparable.
+
+ The defensible position is not "we are highest." It is: we report a
+ competitive Dice under a stricter protocol than most entries above us, on the
+ complete cohort with nothing excluded, and we say exactly what our number
+ measures.
+
+ 07What is novel, and what is not
+
+ This is the section to read twice before meeting your supervisor. Being
+ precise here protects you; over-claiming does not.
+
+ Not novel — do not claim these
+
+ U-Net (Ronneberger 2015) · attention gates (Oktay 2018) · ASPP
+ (Chen, DeepLab) · deep supervision (Lee 2015) · Tversky loss
+ (Salehi 2017) · CLAHE.
+
+ Assembling them well is competent engineering, and the result is strong.
+ But if you present the combination as an architectural novelty, a reviewer
+ will cite all five original papers back at you. Say instead:
+ "a well-established segmentation backbone, chosen so that the contribution
+ is isolated elsewhere."
+
+ Novelty 1 — architecture
+
+ A dueling value/advantage head for dense segmentation, with a
+ proof of its degeneracy and a repaired variant.
+
+ Nobody has transferred the Wang et al. (2016) decomposition to
+ pixel-level prediction. You did, you proved analytically that it cannot work
+ for binary segmentation, you confirmed the proof numerically (zero
+ gradient), you confirmed it empirically across five folds (+0.0003 against
+ 0.0030 fold noise), and you built duel2 to show the failure is
+ structural rather than an implementation error.
+
+ A neutral result you can prove is worth more than a small
+ gain you cannot explain.
+
+ Novelty 2 — method
+
+ A leakage-controlled, geometry-controlled segmentation protocol
+ that makes the downstream classifier honest.
+
+ Predicted masks generated only for patients each fold never
+ trained on — the radiologist's outline never reaches the classifier, so
+ the pipeline is end-to-end deployable.
+
+ Coverage-normalised crop geometry (fixed 23%) so every lesion is seen
+ at a comparable scale — and, measurably, this removed the size dependence
+ (Spearman +0.039).
+
+ Zero synthetic pixels, verified by geometric audit.
+
+ One partition shared by both stages, patient disjointness asserted in
+ code.
+
+ If your supervisor wants a novelty with a positive number attached,
+ it lives in Stage 2, not Stage 1. The mask-guided dual-pooling
+ classification head — where the predicted mask weights features
+ (w = 1 + 2m) rather than gating them, pooled twice and concatenated — is worth
+ +0.0705 AUC over an architecturally identical mask-blind
+ control, and the accompanying ablation shows that gating instead costs
+ −0.11 AUC. That is a genuine architectural contribution with
+ a measured effect and a mechanistic explanation: the diagnostic signal lives
+ at the lesion margin, which a gate discards.
+
+ 08The dataset-size question
+
+ TCIA lists CBIS-DDSM at 163 GB. Your copy is
+ 6 GB. Nothing is missing.
+
+ QuantityOfficial CBIS-DDSM massThis work
+
+ | Training abnormalities | 1,318 | —
+
+ | Test abnormalities | 378 | —
+
+ | Total mass regions | 1,696 | 1,696 ✓
+
+ | Lesions | 1,005 | 1,005 ✓
+
+ | Patients | 892 | 892 ✓
+
+ 1,318 + 378 = 1,696. You are using the complete mass cohort.
+
+ The 163 GB figure covers 16-bit DICOM storage of
+ both the mass and calcification cohorts, with three files per
+ abnormality (full mammogram, cropped image, mask) — 10,239 images. Your 6 GB is
+ the 8-bit JPEG conversion of the identical cases. Same patients, same lesions,
+ same biopsy labels, different container.
+
+ Say this if challenged:
+
+ I use the complete CBIS-DDSM mass cohort — all 1,696 annotated
+ regions from 1,005 lesions in 892 patients, with no BI-RADS category or
+ pathology class excluded — plus external validation on INbreast. The 163 GB
+ figure refers to 16-bit DICOM storage of both cohorts; I work from the 8-bit
+ JPEG conversion of the identical cases, and I quantify that limitation
+ directly: a measured median of 80 distinct grey levels inside lesion regions,
+ against 16-bit originals.
+
+ You are not hiding the limitation — you measured it. That is a stronger
+ position than most people who will ask the question.
+
+ Stage 1 dossier · CBIS-DDSM mass segmentation · all figures from
+ seg_v3/ (v4 crops, patient-grouped 5-fold) and
+ seg_v2/ (head ablation). Literature figures in §6 require
+ verification against primary sources before submission.

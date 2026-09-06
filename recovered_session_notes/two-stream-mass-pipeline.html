@@ -1,0 +1,422 @@
+<!doctype html><html><head><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.EF7sW8YL.js","assets":"assets.8Gk803W0.js","comments":"comments.vw5vQdGA.js","db":"db.h-3sndFg.js","downloads":"downloads.C3GSvEDP.js","embed":"embed.CxGAyc-v.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","notifications":"notifications.ssU4jy7G.js","permissions":"permissions.BNySkLV5.js","room":"room.VSdFwTE9.js","sample":"sample.BW2Uysoh.js","self":"artifact.EF7sW8YL.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.DSB5x63f.js","comments":"_comments.C6E0cR5g.js","translate":"_translate.5HCW4BJh.js"}</script><script>(function(){"use strict";var te=["light","dark","system"],re=/^[A-Za-z0-9_-]{1,64}$/,$=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,ne=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function oe(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||ne.has(t)}var Be="http://www.w3.org/1999/xhtml",se="http://www.w3.org/2000/svg",ae=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),ie=new Set(["script","style"]);function ce(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!ae.has(t):e.namespaceURI===se?!ie.has(t):!1}function M(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function le(e,t){const r=e.length,n=t.length;let s=0;for(;s<r&&s<n&&M(e.charCodeAt(s),t.charCodeAt(s));)s++;let o=0;for(;o<r-s&&o<n-s&&M(e.charCodeAt(r-1-o),t.charCodeAt(n-1-o));)o++;return{p:s,s:o}}function ue(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,s=n.length,o=t.length,{p:i,s:c}=le(n,t);i===s&&c===0&&s===o||r.replaceData(i,s-i-c,t.slice(i,o-c));const h=r.data,p=e.ownerDocument.getSelection?.()??null,w=p!==null&&p.rangeCount>0&&(p.anchorNode===r||p.focusNode===r)?{anchor:p.anchorNode,anchorOffset:p.anchorOffset,focus:p.focusNode,focusOffset:p.focusOffset}:null;let m=-1,g=-1;for(let f=0;f<h.length&&f<t.length;f++){const v=h.charCodeAt(f),b=t.charCodeAt(f);v!==b&&M(v,b)&&(m<0&&(m=f),g=f)}const a=m>=0;if(a&&r.replaceData(m,g-m+1,t.slice(m,g+1)),a&&w!==null&&w.anchor!==null&&w.focus!==null)try{p.setBaseAndExtent(w.anchor,w.anchorOffset,w.focus,w.focusOffset)}catch{}}var fe=new Set(["html","head","body","frameset"]);function de(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&fe.has(e.localName)}function pe(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!re.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!$.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!$.test(r))return!1}return!0}function me(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let s=0;s<n.length;s++)if(!t(n[s]))return!1;return!0}function he(e){return e===null||typeof e!="object"?!1:me(e.__frame_patch,pe)}function _e(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function ve(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function ye(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&te.includes(r)}var A=/^[\w.-]+\.js$/;function we(e,t,r){return r?"inert":typeof t=="string"&&A.test(t)?e?[t]:"inert":e?"inert":"framed"}function ge(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function be(){return{post:()=>{},on:()=>()=>{}}}var j="__frame_scroll",Ee=150,Ae=310,Se=160,Te=3e4;function ke(){let e=0,t=!1,r=!1,n=!1,s=0,o=null;const i=l=>{try{sessionStorage.setItem(j,JSON.stringify({y:l}))}catch{}},c=()=>{if(clearTimeout(e),o===null)return;const l=o;o=null,i(l)},h=()=>{if(t){t=!1;return}r=!0,o=scrollY,clearTimeout(e),e=setTimeout(c,Ee)};try{addEventListener("scroll",h,{passive:!0}),addEventListener("pagehide",c)}catch{}const p=()=>{let l;try{l=sessionStorage.getItem(j)}catch{return null}if(l===null)return null;let _;try{_=JSON.parse(l)}catch{_=null}const d=_?.y;if(!(typeof d=="number"&&Number.isFinite(d)&&d>=0)){try{sessionStorage.removeItem(j)}catch{}return null}return d};let w=!1;const m=l=>{try{const _=scrollY;scrollTo({top:l,left:0,behavior:"instant"}),s=l,n=!0,clearTimeout(e),o=null,i(l);const d=scrollY;d!==_&&(t=!0),d!==l&&!w&&(w=!0,addEventListener("load",()=>{try{if(scrollY===d){const T=p();m(T!==null?T:s)}}catch{}},{once:!0}))}catch{}},g=()=>{try{return!!location.hash}catch{return!0}};let a=!1;const f=()=>{try{if(a||innerWidth>Ae||innerHeight>Se)return;a=!0;const l=Date.now(),_=()=>{try{removeEventListener("resize",_)}catch{}if(Date.now()-l>Te||r||g())return;const d=p();m(d!==null?d:s)};addEventListener("resize",_)}catch{}};let v=!1,b=!1;return{restore(){if(v||(v=!0,g()))return;const l=p();l!==null&&(m(l),f())},promoted(){if(b||(b=!0,g()))return;const l=p();l!==null?(m(l),f()):n&&m(s)}}}function Re(e,t,r,n){let s=null;try{s=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:h=>h})??null}catch{}const o=window.Worker,i=o?.prototype,c=Object.freeze({Worker:o,workerOn:i?.addEventListener,workerPost:i?.postMessage,workerTerminate:i?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:s,origins:t});r(e).then(h=>h?.bootTopLevel?h.bootTopLevel(c,n):n.settle()).catch(()=>n.settle())}var De="modulepreload",Ie=function(e){return"/"+e},Ue={},Le=function(t,r,n){let s=Promise.resolve();function o(i){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=i,window.dispatchEvent(c),!c.defaultPrevented)throw i}return s.then(i=>{for(const c of i||[])c.status==="rejected"&&o(c.reason);return t().catch(o)})},Oe=window===top,q=Object.getOwnPropertyDescriptor(window,"claude"),k=we(Oe,window.__FRAME_PREAMBLE?.topLevel,q?.writable===!1),N=typeof k=="object"&&k[0],y=N?be():ge();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let s=0;s<r.length;s++){const o=r[s];try{e(t,o,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[o]}catch{}try{e(t,o,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[o]=="function"&&n++}if(n&&k==="framed")try{y.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Pe=1e4,Y=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function X(e){for(const t of Y)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var R=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),B=window.__FRAME_PREAMBLE?.transforms,D=window.__FRAME_PREAMBLE?.comments,I=window.__FRAME_PREAMBLE?.translate;function S(e){return Le(()=>import("/_runtime/"+e),void 0)}function G(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:x,hooks:O,pipe:()=>({wrap:(r,n)=>(...s)=>{try{return n(...s)}catch(o){return Promise.reject(o)}}})}}var L=null,E=null;function V(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var U=!1,O={editBefore:null,edit:null};function Ce(e,t,r=!1){const n=[];let s;if(r)try{O.editBefore?.(e)}catch{}for(const o of e.elements){const i=document.querySelector(`[data-id="${o.target}"]`);if(!i){s=o.target;break}if([...Object.keys(o.attrsSet??{}),...o.attrsRemoved??[]].some(c=>!oe(c))){s=o.target;break}if(o.text!==void 0&&(!ce(i)||de(i))){s=o.target;break}for(const[c,h]of Object.entries(o.attrsSet??{}))if(!J(i,c)){try{i.setAttribute(c,h)}catch{}Z(i,c,h)}for(const c of o.attrsRemoved??[])J(i,c)||(i.removeAttribute(c),Z(i,c,null));typeof o.text=="string"&&ue(i,o.text),n.push(o.target)}if(r)try{O.edit?.(e.seq,n,s)}catch{}if(s!==void 0){y.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function Z(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function J(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function Q(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,U=!0):U&&(delete t.dataset.theme,t.style.colorScheme="",U=!1)}var P=new Map;function Me(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function F(){for(const e of P.values())e.done||(e.nulled=!0,e.r(null))}var je=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),x=(e,t)=>{const r=P.get(e);if(!r||r.done){r?.nulled&&E&&y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},E);return}const n=typeof t=="function"?Object.setPrototypeOf(t,je):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ee(){const e=q?.value??{};V(window,"claude",e);for(const t of Object.keys(R)){if(e[t]!==void 0){V(e,t,e[t]);continue}P.set(t,Me())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(R,r))return Promise.resolve(null);const n=P.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(k==="framed"){const e=B&&A.test(B)?S(B).catch(()=>{}):Promise.resolve(void 0),t=a=>{if(a.type==="auxclick"&&a.button!==1)return;const f=a.target,v=f&&f.closest?f.closest("a[href],area[href]"):null;if(!v)return;const b=v.getAttribute("href");if(!b)return;let l;try{l=new URL(b,document.baseURI)}catch{return}if((l.protocol==="http:"||l.protocol==="https:")&&l.origin!==location.origin){a.preventDefault();const _=(v.getAttribute("target")??"").toLowerCase(),d=a.type==="auxclick"||a.metaKey||a.ctrlKey||a.shiftKey||a.altKey||!["","_self","_top","_parent"].includes(_);y.post({__frame_nav:!0,url:l.href,newTab:d},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=a=>{a.isTrusted&&(r.pointer=!0)},s=a=>{a.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0}),e.then(a=>{a?.wireNav&&(a.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",s,!0),a.wireEngagement?.(r))});let o=null;try{o=ke()}catch{}ee();let i=null,c=null,h=0;const p=y.on((a,f)=>{X(f)&&_e(a)&&(i=a.__frame_init,E=f,p(),clearTimeout(h),c?.())});y.post({__frame_connect:!0},"*");const w=new Promise(a=>{c=a,h=setTimeout(()=>{p(),a()},Pe)}),m=document.readyState==="loading"?new Promise(a=>document.addEventListener("DOMContentLoaded",()=>a(),{once:!0})):Promise.resolve();m.then(()=>{try{o?.restore()}catch{}});const g={cb:null};y.on((a,f)=>{if(X(f)&&ve(a)){try{o?.promoted()}catch{}g.cb?.()}}),w.then(async()=>{if(!i||!E){F();return}Q(i.theme);const a=E;let f=!1,v=!1;y.on((u,z,C)=>{if(z!==a)return;ye(u)&&Q(u.__frame_theme.theme),he(u)&&Ce(u.__frame_patch,a,C);const H=u?.__fc_mode;H&&typeof H=="object"&&!f&&D&&A.test(D)&&(f=!0,S(D).then(K=>K.install?.(a,H.on===!0)).catch(()=>{}));const W=u?.__ft_cmd;W&&typeof W=="object"&&!v&&I&&A.test(I)&&(v=!0,S(I).then(K=>K.install?.(a,W)).catch(()=>{}))});const b=Object.keys(i.capabilities??{}).filter(u=>Object.hasOwn(R,u)).map(u=>[u,R[u]]).filter(u=>typeof u[1]=="string"&&A.test(u[1])),l=await Promise.allSettled(b.map(([,u])=>S(u))),_=await e,d=E;if(_?.buildBoot||y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),_?.buildBoot)try{L=_.buildBoot(i,_.TRANSFORMS??{},{shellOrigin:d,mount:x,hooks:O},u=>y.post({__frame_cap_telemetry:u},d))}catch{y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),L=G(i,d)}else L=G(i,d);const T=u=>y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:u}},d),Ne=L;l.forEach((u,z)=>{const C=b[z][0];if(u.status!=="fulfilled"){T(C);return}try{u.value?.install?.(Ne)}catch{T(C)}}),F(),await m,y.post({__frame_ready:!0},E),e.then(u=>u?.installSizeReporter?.(d,g))})}else N&&(ee(),Re(N,Y,S,{settle:F,mount:x}))})();</script><!-- /frame-runtime --><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Two-Stream Mass Pipeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,600;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --ground:#FAFAFB; --surface:#FFFFFF; --surface-2:#F2F4F7;
+  --ink:#171C26; --ink-2:#3D4757; --muted:#6B7788; --hair:#DCE1E8;
+  --seg:#1F6FB2;      /* segmentation / novelty 1 */
+  --seg-soft:#E7F0F8;
+  --fuse:#A8492F;     /* fusion / novelty 2 */
+  --fuse-soft:#F8ECE8;
+  --good:#2C6E52;
+  --shadow:0 1px 2px rgba(20,28,45,.05), 0 8px 24px -14px rgba(20,28,45,.22);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --ground:#10131A; --surface:#171B24; --surface-2:#1E232E;
+    --ink:#E8ECF3; --ink-2:#BAC3D0; --muted:#8B96A6; --hair:#2A3140;
+    --seg:#6BAEE4; --seg-soft:#16283A;
+    --fuse:#E29277; --fuse-soft:#2E1F1A;
+    --good:#6FBF97;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.7);
+  }
+}
+:root[data-theme="dark"]{
+  --ground:#10131A; --surface:#171B24; --surface-2:#1E232E;
+  --ink:#E8ECF3; --ink-2:#BAC3D0; --muted:#8B96A6; --hair:#2A3140;
+  --seg:#6BAEE4; --seg-soft:#16283A;
+  --fuse:#E29277; --fuse-soft:#2E1F1A;
+  --good:#6FBF97;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 10px 28px -16px rgba(0,0,0,.7);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--ground); color:var(--ink);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  font-size:15px; line-height:1.55; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px; margin:0 auto; padding:48px 24px 96px}
+
+/* ---------- masthead ---------- */
+.mast{border-bottom:2px solid var(--ink); padding-bottom:20px; margin-bottom:14px}
+h1{
+  font-family:Newsreader,Georgia,serif; font-weight:600;
+  font-size:clamp(30px,4.6vw,44px); line-height:1.08; margin:0 0 8px;
+  letter-spacing:-.015em; text-wrap:balance;
+}
+.sub{color:var(--muted); font-size:15px; max-width:62ch; margin:0}
+.mast-meta{
+  display:flex; flex-wrap:wrap; gap:8px 22px; margin-top:16px;
+  font-family:"IBM Plex Mono",ui-monospace,monospace; font-size:12px;
+  color:var(--muted); letter-spacing:.02em;
+}
+.mast-meta b{color:var(--ink-2); font-weight:500}
+
+.legend{
+  display:flex; flex-wrap:wrap; gap:18px; margin:22px 0 40px;
+  font-size:12.5px; color:var(--ink-2);
+}
+.key{display:inline-flex; align-items:center; gap:8px}
+.dot{width:11px; height:11px; border-radius:3px; flex:none}
+.dot.s{background:var(--seg)} .dot.f{background:var(--fuse)}
+.dot.n{background:var(--hair); border:1px solid var(--muted)}
+
+/* ---------- panel ---------- */
+.panel{margin-bottom:64px}
+.panel-head{display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:6px}
+.panel-head h2{
+  font-family:Newsreader,Georgia,serif; font-weight:600; font-size:26px;
+  margin:0; letter-spacing:-.01em;
+}
+.tagline{color:var(--muted); font-size:13.5px; margin:0 0 26px; max-width:66ch}
+.protocol{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.09em;
+  text-transform:uppercase; color:var(--surface); background:var(--ink);
+  padding:3px 9px; border-radius:3px;
+}
+
+/* ---------- flow ---------- */
+.flow{display:flex; flex-direction:column; gap:0}
+.step{
+  display:grid; grid-template-columns:34px 1fr 232px; gap:0 18px;
+  background:var(--surface); border:1px solid var(--hair);
+  border-radius:9px; padding:16px 18px; box-shadow:var(--shadow);
+  align-items:start;
+}
+.step.seg{border-left:4px solid var(--seg)}
+.step.fuse{border-left:4px solid var(--fuse)}
+.stepnum{
+  font-family:"IBM Plex Mono",monospace; font-size:12px; font-weight:600;
+  color:var(--muted); padding-top:2px; font-variant-numeric:tabular-nums;
+}
+.step h3{
+  font-size:15.5px; font-weight:600; margin:0 0 3px; letter-spacing:-.005em;
+  display:flex; align-items:center; gap:9px; flex-wrap:wrap;
+}
+.badge{
+  font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.1em;
+  text-transform:uppercase; padding:2px 7px; border-radius:3px; font-weight:600;
+}
+.badge.s{background:var(--seg-soft); color:var(--seg)}
+.badge.f{background:var(--fuse-soft); color:var(--fuse)}
+.what{color:var(--ink-2); font-size:13.5px; margin:0 0 7px}
+.plain{
+  color:var(--muted); font-size:12.5px; margin:0; font-style:italic;
+  border-left:2px solid var(--hair); padding-left:10px;
+}
+.tech{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--muted);
+  margin:7px 0 0; line-height:1.7;
+}
+
+/* result rail */
+.rail{
+  background:var(--surface-2); border-radius:6px; padding:11px 13px;
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px;
+  font-variant-numeric:tabular-nums;
+}
+.rail-t{
+  font-size:9.5px; letter-spacing:.1em; text-transform:uppercase;
+  color:var(--muted); margin-bottom:7px; font-weight:600;
+}
+.rail-row{display:flex; justify-content:space-between; gap:10px; padding:2px 0}
+.rail-row span:first-child{color:var(--muted)}
+.rail-row b{font-weight:600; color:var(--ink)}
+.gain{color:var(--good); font-weight:600}
+.rail.empty{background:none; padding:11px 0; color:var(--muted); font-size:11.5px}
+
+.arrow{
+  height:22px; display:flex; align-items:center; justify-content:flex-start;
+  padding-left:33px;
+}
+.arrow::before{
+  content:""; width:1px; height:100%; background:var(--hair);
+}
+.arrow::after{
+  content:""; width:0; height:0; margin-left:-4.5px; align-self:flex-end;
+  border-left:4.5px solid transparent; border-right:4.5px solid transparent;
+  border-top:6px solid var(--hair);
+}
+
+/* ---------- outputs ---------- */
+.split{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-top:14px}
+.out{
+  background:var(--surface); border:1px solid var(--hair);
+  border-top:3px solid var(--ink); border-radius:9px; padding:16px 18px;
+  box-shadow:var(--shadow);
+}
+.out h4{
+  font-size:14px; margin:0 0 2px; font-weight:600;
+  display:flex; justify-content:space-between; align-items:baseline; gap:10px;
+}
+.out h4 em{
+  font-style:normal; font-family:"IBM Plex Mono",monospace;
+  font-size:11px; color:var(--muted); font-weight:400;
+}
+.out .how{color:var(--muted); font-size:12.5px; margin:0 0 12px}
+table{width:100%; border-collapse:collapse; font-size:12.5px}
+th,td{text-align:right; padding:5px 0; border-bottom:1px solid var(--hair)}
+th:first-child,td:first-child{text-align:left}
+th{
+  font-family:"IBM Plex Mono",monospace; font-size:9.5px; letter-spacing:.08em;
+  text-transform:uppercase; color:var(--muted); font-weight:600;
+}
+td{font-family:"IBM Plex Mono",monospace; font-variant-numeric:tabular-nums; color:var(--ink-2)}
+tr:last-child td{border-bottom:none}
+tr.final td{color:var(--ink); font-weight:600}
+tr.final td:first-child{color:var(--fuse)}
+
+.note{
+  margin-top:34px; padding:16px 18px; background:var(--surface-2);
+  border-radius:8px; font-size:13px; color:var(--ink-2);
+}
+.note b{color:var(--ink)}
+.note p{margin:0 0 8px} .note p:last-child{margin:0}
+
+.tablewrap{overflow-x:auto}
+
+@media (max-width:820px){
+  .step{grid-template-columns:28px 1fr; gap:0 14px}
+  .rail{grid-column:2; margin-top:12px}
+  .split{grid-template-columns:1fr}
+  .arrow{padding-left:27px}
+}
+@media print{
+  body{background:#fff}
+  .panel{break-inside:avoid; page-break-inside:avoid}
+  .step{box-shadow:none}
+}
+</style>
+
+<div class="wrap">
+
+<header class="mast">
+  <h1>Segmentation-Guided Mass Diagnosis</h1>
+  <p class="sub">How a mammographic mass crop becomes a benign-or-malignant decision, and what each stage of the pipeline contributes to the result.</p>
+  <div class="mast-meta">
+    <span>Dataset <b>CBIS-DDSM mass subset</b></span>
+    <span>1,696 crops · 1,005 lesions · <b>892 patients</b></span>
+    <span>Splitting grouped by <b>patient</b> throughout</span>
+  </div>
+</header>
+
+<div class="legend">
+  <span class="key"><span class="dot s"></span> Contribution 1 — mask-guided two-stream network</span>
+  <span class="key"><span class="dot f"></span> Contribution 2 — fusion with radiological assessment</span>
+  <span class="key"><span class="dot n"></span> Standard processing</span>
+</div>
+
+<!-- ============ PANEL 1 : OFFICIAL SPLIT ============ -->
+<section class="panel">
+  <div class="panel-head">
+    <h2>Official TCIA partition</h2>
+    <span class="protocol">Protocol A</span>
+  </div>
+  <p class="tagline">The train/test division published with the dataset. 1,318 crops from 691 patients for training; 378 crops from 201 patients held out. No patient appears on both sides. This is the harder and more comparable evaluation — the held-out set is 38.9% malignant against 48.3% in training.</p>
+
+  <div class="flow">
+
+    <div class="step">
+      <div class="stepnum">01</div>
+      <div>
+        <h3>Region of interest</h3>
+        <p class="what">Each annotated mass is supplied as a cropped image around the lesion, in both the craniocaudal and mediolateral-oblique projections.</p>
+        <p class="tech">1,318 training crops · 378 test crops · 8-bit greyscale</p>
+      </div>
+      <div class="rail empty">no model yet</div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step">
+      <div class="stepnum">02</div>
+      <div>
+        <h3>Contrast equalisation</h3>
+        <p class="what">CLAHE is applied so that faint lesion margins in dense tissue become visible to the network.</p>
+        <p class="tech">clip limit 2.0 · 8×8 tiles</p>
+      </div>
+      <div class="rail empty">preprocessing</div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step seg">
+      <div class="stepnum">03</div>
+      <div>
+        <h3>Lesion segmentation <span class="badge s">Contribution 1</span></h3>
+        <p class="what">An attention U-Net with a dilated-convolution bottleneck outlines the mass, producing a pixel map of where the lesion is.</p>
+        <p class="plain">The network is told where to look before it is asked what it sees.</p>
+        <p class="tech">DS-Attn-UNet + ASPP · 256×256 · trained on the same patient-grouped folds</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">Segmentation quality</div>
+        <div class="rail-row"><span>Dice</span><b>0.9065</b></div>
+        <div class="rail-row"><span>external (INbreast)</span><b>0.880</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step seg">
+      <div class="stepnum">04</div>
+      <div>
+        <h3>Two-stream classifier <span class="badge s">Contribution 1</span></h3>
+        <p class="what">Two DenseNet-121 encoders run in parallel: one on the tight crop at 512 px, one on a 1.75× wider crop at 384 px. Features are pooled twice — once weighted by the predicted mask, once uniformly — and concatenated.</p>
+        <p class="plain">One stream studies the lesion itself; the other studies the tissue around it. The mask makes the lesion count more without discarding its surroundings.</p>
+        <p class="tech">mask weighting w = 1 + 2·mask · 4,096-d feature · focal loss</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">AUC, image level</div>
+        <div class="rail-row"><span>plain DenseNet</span><b>0.7994</b></div>
+        <div class="rail-row"><span>+ mask pooling</span><b>0.8480</b></div>
+        <div class="rail-row"><span>+ wide stream</span><b>0.8769</b></div>
+        <div class="rail-row"><span>gain</span><b class="gain">+0.078</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step fuse">
+      <div class="stepnum">05</div>
+      <div>
+        <h3>Fusion with radiological assessment <span class="badge f">Contribution 2</span></h3>
+        <p class="what">The network's probability is combined with three fields the radiologist already recorded — the BI-RADS category, breast density, and lesion subtlety — by a logistic model fitted on the training partition alone and then frozen.</p>
+        <p class="plain">The image and the radiologist disagree in different ways. Where the radiologist is already certain, the model defers; where the assessment is ambiguous, the image decides. Combining them beats either alone.</p>
+        <p class="tech">inputs: log-odds of CNN probability, BI-RADS one-hot, density, subtlety · threshold fitted on training data under a 0.70 sensitivity floor</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">AUC, image level</div>
+        <div class="rail-row"><span>before fusion</span><b>0.8769</b></div>
+        <div class="rail-row"><span>after fusion</span><b>0.9061</b></div>
+        <div class="rail-row"><span>gain</span><b class="gain">+0.029</b></div>
+        <div class="rail-row"><span>false positives</span><b class="gain">43 → 30</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+  </div>
+
+  <div class="split">
+    <div class="out">
+      <h4>Image level <em>n = 378</em></h4>
+      <p class="how">Every crop is scored on its own. One mass photographed twice counts twice. This is the unit almost all published work uses.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Stage</th><th>AUC</th><th>Acc</th><th>Sens</th><th>Spec</th></tr>
+        <tr><td>baseline</td><td>0.7994</td><td>73.5%</td><td>0.660</td><td>0.792</td></tr>
+        <tr><td>two-stream</td><td>0.8769</td><td>80.7%</td><td>0.796</td><td>0.814</td></tr>
+        <tr class="final"><td>+ fusion</td><td>0.9061</td><td>84.1%</td><td>0.796</td><td>0.870</td></tr>
+      </table></div>
+    </div>
+    <div class="out">
+      <h4>Lesion level <em>n = 223</em></h4>
+      <p class="how">The two projections of one mass are averaged into a single decision, as a radiologist would. Fewer, harder items — and the clinically meaningful unit.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Stage</th><th>AUC</th><th>Acc</th><th>Sens</th><th>Spec</th></tr>
+        <tr><td>baseline</td><td>0.8092</td><td>74.9%</td><td>0.632</td><td>0.824</td></tr>
+        <tr><td>two-stream</td><td>0.9043</td><td>85.2%</td><td>0.816</td><td>0.875</td></tr>
+        <tr class="final"><td>+ fusion</td><td>0.9304</td><td>86.1%</td><td>0.897</td><td>0.838</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PANEL 2 : CROSS-VALIDATION ============ -->
+<section class="panel">
+  <div class="panel-head">
+    <h2>Five-fold cross-validation</h2>
+    <span class="protocol">Protocol B</span>
+  </div>
+  <p class="tagline">The same pipeline, evaluated the way most of the literature does it. All 892 patients are divided into five groups; each group is held out in turn while the other four train. Every patient is tested exactly once, and no patient ever appears in both sides of a fold.</p>
+
+  <div class="flow">
+
+    <div class="step">
+      <div class="stepnum">01</div>
+      <div>
+        <h3>Patient-grouped folds</h3>
+        <p class="what">Folds are formed over patients, not images, so both projections and every lesion belonging to one woman always move together.</p>
+        <p class="plain">If the same tumour appeared in training and testing, the score would be meaningless. Grouping by patient makes that impossible.</p>
+        <p class="tech">StratifiedGroupKFold · 5 folds · stratified on pathology and BI-RADS · leakage check passes on every fold</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">Coverage</div>
+        <div class="rail-row"><span>crops</span><b>1,696</b></div>
+        <div class="rail-row"><span>lesions</span><b>1,005</b></div>
+        <div class="rail-row"><span>patients</span><b>892</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step seg">
+      <div class="stepnum">02</div>
+      <div>
+        <h3>Segmentation and two-stream classification <span class="badge s">Contribution 1</span></h3>
+        <p class="what">Identical architecture to Protocol A — the attention U-Net produces the mask, the two DenseNet streams read the tight and wide crops, and mask-weighted pooling combines them.</p>
+        <p class="plain">Nothing about the method changes between the two protocols. Only which patients are used for training changes.</p>
+        <p class="tech">same weights, same hyperparameters, same augmentation · retrained per fold</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">AUC, two-stream</div>
+        <div class="rail-row"><span>image level</span><b>0.8734</b></div>
+        <div class="rail-row"><span>lesion level</span><b>0.8885</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+
+    <div class="step fuse">
+      <div class="stepnum">03</div>
+      <div>
+        <h3>Fusion, refitted inside every fold <span class="badge f">Contribution 2</span></h3>
+        <p class="what">The fusion model and its decision threshold are refitted from scratch on each fold's four training groups and applied to the held-out group. They never see the data they are scored on.</p>
+        <p class="plain">The gain is larger here than on the official partition, because training and testing have the same proportion of cancers — so the threshold lands where it was designed to.</p>
+        <p class="tech">logistic fusion refitted 5× · threshold refitted 5× · pooled out-of-fold</p>
+      </div>
+      <div class="rail">
+        <div class="rail-t">AUC gain from fusion</div>
+        <div class="rail-row"><span>image level</span><b class="gain">+0.043</b></div>
+        <div class="rail-row"><span>lesion level</span><b class="gain">+0.038</b></div>
+      </div>
+    </div>
+
+    <div class="arrow"></div>
+  </div>
+
+  <div class="split">
+    <div class="out">
+      <h4>Image level <em>n = 1,696</em></h4>
+      <p class="how">Every crop scored on its own, pooled across all five held-out folds.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Stage</th><th>AUC</th><th>Acc</th><th>Sens</th><th>Spec</th></tr>
+        <tr><td>two-stream</td><td>0.8734</td><td>79.8%</td><td>0.718</td><td>0.866</td></tr>
+        <tr class="final"><td>+ fusion</td><td>0.9168</td><td>84.2%</td><td>0.764</td><td>0.909</td></tr>
+      </table></div>
+    </div>
+    <div class="out">
+      <h4>Lesion level <em>n = 1,005</em></h4>
+      <p class="how">Projections averaged per mass, pooled across all five held-out folds.</p>
+      <div class="tablewrap"><table>
+        <tr><th>Stage</th><th>AUC</th><th>Acc</th><th>Sens</th><th>Spec</th></tr>
+        <tr><td>two-stream</td><td>0.8885</td><td>80.4%</td><td>0.794</td><td>0.812</td></tr>
+        <tr class="final"><td>+ fusion</td><td>0.9260</td><td>85.7%</td><td>0.831</td><td>0.879</td></tr>
+      </table></div>
+    </div>
+  </div>
+</section>
+
+<div class="note">
+  <p><b>Reading the two protocols together.</b> Both report the same method on the same data; they differ only in which patients are used for training. Discrimination exceeds 0.90 in all four cells, and the two protocols agree to within 0.03 AUC — evidence that neither estimate is an artefact of how the data was divided.</p>
+  <p><b>What the fusion result means.</b> Rows marked <em>+ fusion</em> combine the image with the radiologist's recorded assessment, so they are not image-only results and are reported separately from the two-stream rows throughout. At lesion level on the official partition the fusion raises sensitivity from 0.816 to 0.897 — nine missed cancers instead of sixteen — at the cost of six additional false positives.</p>
+  <p><b>Segmentation.</b> Dice 0.9065 on the official partition and 0.880 on INbreast, an independent dataset acquired on different equipment in a different country.</p>
+</div>
+
+</div>
+
+</body></html>

@@ -1,0 +1,201 @@
+Two-Stream Mass Pipeline
+
+ Segmentation-Guided Mass Diagnosis
+
+ How a mammographic mass crop becomes a benign-or-malignant decision, and what each stage of the pipeline contributes to the result.
+
+ Dataset CBIS-DDSM mass subset
+ 1,696 crops · 1,005 lesions · 892 patients
+ Splitting grouped by patient throughout
+
+ Contribution 1 — mask-guided two-stream network
+ Contribution 2 — fusion with radiological assessment
+ Standard processing
+
+ Official TCIA partition
+
+ Protocol A
+
+ The train/test division published with the dataset. 1,318 crops from 691 patients for training; 378 crops from 201 patients held out. No patient appears on both sides. This is the harder and more comparable evaluation — the held-out set is 38.9% malignant against 48.3% in training.
+
+ 01
+
+ Region of interest
+
+ Each annotated mass is supplied as a cropped image around the lesion, in both the craniocaudal and mediolateral-oblique projections.
+
+ 1,318 training crops · 378 test crops · 8-bit greyscale
+
+ no model yet
+
+ 02
+
+ Contrast equalisation
+
+ CLAHE is applied so that faint lesion margins in dense tissue become visible to the network.
+
+ clip limit 2.0 · 8×8 tiles
+
+ preprocessing
+
+ 03
+
+ Lesion segmentation Contribution 1
+
+ An attention U-Net with a dilated-convolution bottleneck outlines the mass, producing a pixel map of where the lesion is.
+
+ The network is told where to look before it is asked what it sees.
+
+ DS-Attn-UNet + ASPP · 256×256 · trained on the same patient-grouped folds
+
+ Segmentation quality
+
+ Dice0.9065
+
+ external (INbreast)0.880
+
+ 04
+
+ Two-stream classifier Contribution 1
+
+ Two DenseNet-121 encoders run in parallel: one on the tight crop at 512 px, one on a 1.75× wider crop at 384 px. Features are pooled twice — once weighted by the predicted mask, once uniformly — and concatenated.
+
+ One stream studies the lesion itself; the other studies the tissue around it. The mask makes the lesion count more without discarding its surroundings.
+
+ mask weighting w = 1 + 2·mask · 4,096-d feature · focal loss
+
+ AUC, image level
+
+ plain DenseNet0.7994
+
+ + mask pooling0.8480
+
+ + wide stream0.8769
+
+ gain+0.078
+
+ 05
+
+ Fusion with radiological assessment Contribution 2
+
+ The network's probability is combined with three fields the radiologist already recorded — the BI-RADS category, breast density, and lesion subtlety — by a logistic model fitted on the training partition alone and then frozen.
+
+ The image and the radiologist disagree in different ways. Where the radiologist is already certain, the model defers; where the assessment is ambiguous, the image decides. Combining them beats either alone.
+
+ inputs: log-odds of CNN probability, BI-RADS one-hot, density, subtlety · threshold fitted on training data under a 0.70 sensitivity floor
+
+ AUC, image level
+
+ before fusion0.8769
+
+ after fusion0.9061
+
+ gain+0.029
+
+ false positives43 → 30
+
+ Image level n = 378
+
+ Every crop is scored on its own. One mass photographed twice counts twice. This is the unit almost all published work uses.
+
+ StageAUCAccSensSpec
+
+ | baseline | 0.7994 | 73.5% | 0.660 | 0.792
+
+ | two-stream | 0.8769 | 80.7% | 0.796 | 0.814
+
+ | + fusion | 0.9061 | 84.1% | 0.796 | 0.870
+
+ Lesion level n = 223
+
+ The two projections of one mass are averaged into a single decision, as a radiologist would. Fewer, harder items — and the clinically meaningful unit.
+
+ StageAUCAccSensSpec
+
+ | baseline | 0.8092 | 74.9% | 0.632 | 0.824
+
+ | two-stream | 0.9043 | 85.2% | 0.816 | 0.875
+
+ | + fusion | 0.9304 | 86.1% | 0.897 | 0.838
+
+ Five-fold cross-validation
+
+ Protocol B
+
+ The same pipeline, evaluated the way most of the literature does it. All 892 patients are divided into five groups; each group is held out in turn while the other four train. Every patient is tested exactly once, and no patient ever appears in both sides of a fold.
+
+ 01
+
+ Patient-grouped folds
+
+ Folds are formed over patients, not images, so both projections and every lesion belonging to one woman always move together.
+
+ If the same tumour appeared in training and testing, the score would be meaningless. Grouping by patient makes that impossible.
+
+ StratifiedGroupKFold · 5 folds · stratified on pathology and BI-RADS · leakage check passes on every fold
+
+ Coverage
+
+ crops1,696
+
+ lesions1,005
+
+ patients892
+
+ 02
+
+ Segmentation and two-stream classification Contribution 1
+
+ Identical architecture to Protocol A — the attention U-Net produces the mask, the two DenseNet streams read the tight and wide crops, and mask-weighted pooling combines them.
+
+ Nothing about the method changes between the two protocols. Only which patients are used for training changes.
+
+ same weights, same hyperparameters, same augmentation · retrained per fold
+
+ AUC, two-stream
+
+ image level0.8734
+
+ lesion level0.8885
+
+ 03
+
+ Fusion, refitted inside every fold Contribution 2
+
+ The fusion model and its decision threshold are refitted from scratch on each fold's four training groups and applied to the held-out group. They never see the data they are scored on.
+
+ The gain is larger here than on the official partition, because training and testing have the same proportion of cancers — so the threshold lands where it was designed to.
+
+ logistic fusion refitted 5× · threshold refitted 5× · pooled out-of-fold
+
+ AUC gain from fusion
+
+ image level+0.043
+
+ lesion level+0.038
+
+ Image level n = 1,696
+
+ Every crop scored on its own, pooled across all five held-out folds.
+
+ StageAUCAccSensSpec
+
+ | two-stream | 0.8734 | 79.8% | 0.718 | 0.866
+
+ | + fusion | 0.9168 | 84.2% | 0.764 | 0.909
+
+ Lesion level n = 1,005
+
+ Projections averaged per mass, pooled across all five held-out folds.
+
+ StageAUCAccSensSpec
+
+ | two-stream | 0.8885 | 80.4% | 0.794 | 0.812
+
+ | + fusion | 0.9260 | 85.7% | 0.831 | 0.879
+
+ Reading the two protocols together. Both report the same method on the same data; they differ only in which patients are used for training. Discrimination exceeds 0.90 in all four cells, and the two protocols agree to within 0.03 AUC — evidence that neither estimate is an artefact of how the data was divided.
+
+ What the fusion result means. Rows marked + fusion combine the image with the radiologist's recorded assessment, so they are not image-only results and are reported separately from the two-stream rows throughout. At lesion level on the official partition the fusion raises sensitivity from 0.816 to 0.897 — nine missed cancers instead of sixteen — at the cost of six additional false positives.
+
+ Segmentation. Dice 0.9065 on the official partition and 0.880 on INbreast, an independent dataset acquired on different equipment in a different country.

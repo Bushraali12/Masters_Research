@@ -1,0 +1,382 @@
+Mass Diagnosis Build Log
+
+ CBIS-DDSM · Mass Diagnosis · Build Log
+
+ From 0.68 to 0.90
+
+ Every step of the pipeline in the order it was built — what was added, what it was worth, and what was thrown away. Fifteen stages, four reporting units, and eleven measured dead ends.
+
+ Official CBIS-DDSM split · patient-disjoint · 1,696 ROIs / 1,005 lesions / 892 patients
+
+ 0.9043
+Lesion AUC
+official test, n=223
+
+ 85.7%
+Accuracy
+sens floor 0.90
+
+ 0.9065
+Seg. Dice
+5-model average
+
+ +5.83
+Novelty 2
+accuracy points
+
+ 11
+Dead ends
+measured, not guessed
+
+ PART IThe build, in order
+
+ Each stage is one decision. The number under it is the pooled lesion-level AUC on the official test set unless stated otherwise, and the chip is what that stage was worth against the stage before it.
+
+ 01
+
+ Data foundation and the reporting units
+
+ Starting point
+
+ The CBIS-DDSM mass subset: 1,696 ROI crops, 912 benign and 784 malignant, resolving to 1,005 lesions, 932 breasts and 892 patients. This is the standard benchmark subset other ROI papers report on, which makes the work directly comparable rather than idiosyncratic.
+
+ Four reporting units were defined up front. ROI → lesion by mean score (the CC and MLO crops show the same object). Lesion → breast → patient by mean score and max label. BI-RADS aggregates by max.
+
+ Official test cohort378 ROI · 361 mammograms · 223 lesions · 210 breasts · 201 patients
+
+ 02
+
+ Split integrity, audited before anything was trained
+
+ Foundation
+
+ Every split is patient-grouped. A later full audit confirmed zero straddling at mammogram, breast, lesion and patient level simultaneously — so the 71 mammograms carrying more than one abnormality can never leak across the train/test line.
+
+ Crop integrity was checked separately: 0 unreadable files, 0 crops contaminated by the well-known CBIS-DDSM crop/mask ordering bug, all 512×512, median 116 distinct intensity levels.
+
+ mammo 0breast 0
+ lesion 0patient 0
+ records straddling train/test
+
+ 03
+
+ Stage 1 — segmentation: DS-Attn-UNet with ASPP
+
+ First model
+
+ A deeply-supervised attention U-Net with an ASPP bottleneck, trained patient-blind. Masks used downstream always come from a model that never saw that patient. An ablation attributed 86% of the Dice gain to the ASPP bottleneck.
+
+ Provenance was verified: Dice on training-fold images 0.898 versus 0.905 held out — no memorisation.
+
+ Dice 0.90655-model average on test · per-fold 0.8972 ± 0.0040
+
+ 04
+
+ Baseline floor — handcrafted radiomic features
+
+ Classifier v0
+
+ Shape, texture and intensity features from the ROI, classified conventionally. This established how much of the problem is not solvable by traditional descriptors.
+
+ 0.6807lesion AUCfloor
+
+ 05
+
+ First CNN — single tight crop, DenseNet-121
+
+ Classifier v1
+
+ ImageNet-pretrained DenseNet-121, one 512×512 lesion-centred crop, plain global average pooling. No mask, no context, no auxiliary heads. This is the mask-blind control that every later gain is measured against.
+
+ 0.8092lesion AUC+0.1285 over radiomics
+
+ 06
+
+ Training recipe: transfer learning, focal loss, auxiliary heads
+
+ Classifier v2
+
+ Progressive unfreezing (3 frozen epochs, then discriminative learning rates — 3e-5 backbone, 3e-4 head), focal loss γ=2 with class weighting, CLAHE, and three auxiliary heads predicting subtlety, mass_shape and mass_margins at weight 0.3. Four-fold test-time augmentation.
+
+ 0.8715lesion AUC+0.0623
+
+ 07
+
+ Two-stream input: tight crop plus wide context
+
+ The largest single gain
+
+ A second input branch carrying a wider crop around the lesion, giving the network the peritumoral region — margin, spiculation, surrounding architecture — alongside the lesion itself. Features from both streams concatenated before the head.
+
+ Subgroup analysis showed the wide stream helps most exactly where it should: circumscribed margins +0.0587, round shapes +0.0572, mid-subtlety lesions +0.0253.
+
+ 0.8816lesion AUC, no mask+0.0724 over single crop
+
+ 08
+
+ Novelty 1 — mask-weighted dual pooling
+
+ First contribution
+
+ The segmenter's own prediction becomes a pooling weight: w = 1 + 2·m. The feature map is pooled twice — once weighted, once unweighted — and both descriptors are concatenated. The lesion is emphasised without the surrounding tissue being discarded, and the module is parameter-free.
+
+ Verified not to be a mask-quality artifact: correlation between per-image Dice and classification gain was +0.0062 [−0.095, +0.107].
+
+ 0.9043lesion AUC+0.0227 over the same model without the mask
+
+ 09
+
+ Two-view combination, recognised for what it is
+
+ Reframing, not new work
+
+ Averaging the CC and MLO crops of one lesion is two-view combination — the same operation Shen et al. perform at breast level. Measured on this pipeline: ROI 0.8571 → lesion 0.8816.
+
+ +0.0245two-view gain — inside Shen's reported [+0.018, +0.064] band
+
+ 10
+
+ Novelty 2 — per-BI-RADS decision layer
+
+ Second contribution
+
+ Rather than one global threshold, a separate threshold per BI-RADS category, all fitted jointly by multi-start coordinate ascent under a single cohort-level sensitivity floor. The mechanism is prevalence stratification: BI-RADS 3 is ~5% malignant, BI-RADS 5 is ~95%, so one cut-point cannot serve both.
+
+ Per-stratum floors are degenerate here — BI-RADS 2 contains exactly one malignant lesion — which is precisely why one cohort-level constraint is required.
+
+ 85.7%lesion accuracy
+ +5.83 points
+ bootstrap +5.32 [+2.57, +8.11]
+
+ 11
+
+ Protocol decision — official split as headline
+
+ Methodological
+
+ Both protocols were run. The official CBIS-DDSM split became the headline because it is what the comparable literature reports; patient-grouped 5-fold CV is reported as the secondary, and it comes in lower at every unit (−0.0035 to −0.0197), which is the honest direction.
+
+ An image-level split was measured on the identical model and data and inflated AUC by +0.089. That single number explains most of the implausible results in this literature, and it is reported.
+
+ CV 0.8885lesion AUC, secondary protocol−0.0158 vs official
+
+ 12
+
+ Robustness and adversarial self-checks
+
+ Validation
+
+ Out-of-fold status of training predictions confirmed four independent ways. Mask provenance ≤0.007 AUC. BI-RADS 5 removed entirely — accuracy still 77.9–80.3%, so the result is not carried by the easy stratum. And a BI-RADS noise simulation: at 90% category accuracy the decision layer keeps 82% of its gain, at 85% it keeps 76%, and it never falls below break-even down to 50%.
+
+ 4-way OOF checkmask provenanceBI-RADS 5 removednoise simulation
+
+ 13
+
+ Resolution and weight sharing
+
+ Latest gain
+
+ Tight stream 512 → 768, wide stream 384 → 512, and the two separate backbones collapsed into one shared-weight DenseNet-121. Parameters fell from 15.75M to 8.79M and every unit improved. Mammographic malignancy lives in margin detail, which downsampling destroys.
+
+ 0.8932lesion AUC, no mask
+ +0.011644% fewer parameters
+
+ 14
+
+ Seven-variant pooling ablation
+
+ Today
+
+ Four attempts to obtain the mask's benefit without a mask at inference — GeM pooling, free attention pooling, mask-distilled attention, soft attention re-weighting, and an auxiliary segmentation decoder. Everything else held identical: same crops, split, schedule, augmentation, loss, TTA, and a parameter-matched 3072-d descriptor.
+
+ All four failed, and failed in proportion to how well they localised. Full table in Part III.
+
+ mask 0.9016best of sevenevery mask-free route below baseline
+
+ 15
+
+ Where it stands
+
+ Current
+
+ Final model: two-stream DenseNet-121 with mask-weighted dual pooling, official split, plus the per-BI-RADS decision layer. Lesion AUC 0.9043, accuracy 85.7% at a 0.90 sensitivity floor.
+
+ The architecture search is closed. Seven pooling variants and eleven post-hoc strategies have been measured; the remaining work is one optional 5-fold ensemble run and the writing.
+
+ experiments completeablation table complete
+
+ PART IIFinal results
+
+ Official CBIS-DDSM test set, patient-disjoint. Two-stream DenseNet-121 with mask-weighted dual pooling and the per-BI-RADS decision layer at a 0.90 cohort sensitivity floor. Confidence intervals from patient-clustered bootstrap.
+
+ UnitnAUC [95% CI]
+ Accuracy [95% CI]SensSpecMissed
+
+ | ROI | 378 | 0.8769 [0.828–0.918] | 81.0% [76.3–85.4] | 0.878 | 0.766 | 18 / 147
+
+ | Lesion | 223 | 0.9043 [0.858–0.941] | 85.7% [80.8–90.1] | 0.885 | 0.838 | 10 / 87
+
+ | Breast | 210 | 0.9016 [0.855–0.940] | 84.8% [79.6–89.5] | 0.882 | 0.824 | 10 / 85
+
+ | Patient | 201 | 0.9041 [0.859–0.944] | 85.1% [80.1–90.0] | 0.882 | 0.828 | 10 / 85
+
+ Headline row is lesion level — the unit the comparable ROI literature reports.
+
+ Secondary protocol — 5-fold CV
+
+ ROI 0.8734 · lesion 0.8885 · breast 0.8869 · patient 0.8844. Below the official split at every unit, which is the direction that inspires confidence rather than suspicion.
+
+ Frozen operating point
+
+ {0: 0.515, 1: 0.44, 2: 0.44, 3: 0.495, 4: 0.455, 5: 0.01}
+
+ Global threshold 0.44. Fitted on official training out-of-fold predictions only.
+
+ Where Novelty 2 earns its gain
+
+ Decomposition of the +20 net correct calls at ROI level. The gain comes from the ambiguous strata, not the obvious ones.
+
+ BI-RADSPrior malignancyContributionReading
+
+ | 3 | ~5% malignant | +11 | Threshold raised — benign-leaning stratum stops producing false positives
+
+ | 0 | incomplete | +5 | Needs its own cut-point; lost entirely if fitting data is thin
+
+ | 4 | mixed | +3 | The hard stratum — 42% of lesions, 72% of all errors
+
+ | 5 | ~95% malignant | +1 | Near-zero. The gain is not coming from the easy cases
+
+ Gain by unit: ROI +5.29 · lesion +5.83 · breast +6.19 · patient +5.97 accuracy points.
+
+ PART IIIAblations
+
+ What the mask is worth
+
+ Identical model, identical everything, mask-weighted pooling on or off. Positive at every unit.
+
+ UnitNo maskWith maskΔ
+
+ | ROI | 0.8571 | 0.8769 | +0.0198
+
+ | Lesion | 0.8816 | 0.9043 | +0.0227
+
+ | Breast | 0.8746 | 0.9021 | +0.0275
+
+ | Patient | 0.8797 | 0.9043 | +0.0246
+
+ Tsochatzidis et al. independently report +0.028 from adding segmentation information on the same dataset — two studies converging on the same effect size.
+
+ The seven-variant pooling ablation
+
+ Tight-stream pooling is the only variable. Everything else — crops, split, schedule, augmentation, loss, TTA, descriptor width — is held constant. IoU measures how well the learned map overlaps the true lesion.
+
+ VariantParamsROILesion
+ BreastPatientIoUMask at inferenceΔ vs GAP
+
+ | mask | 9.71M | 0.8702 | 0.9016 | 0.8953 | 0.8966 | — | yes | +0.0166
+
+ | gap | 9.71M | 0.8571 | 0.8850 | 0.8791 | 0.8838 | — | no | baseline
+
+ | gem | 9.71M | 0.8536 | 0.8767 | 0.8708 | 0.8731 | — | no | −0.0083
+
+ | attn | 9.97M | 0.8410 | 0.8697 | 0.8653 | 0.8723 | 0.373 | no | −0.0153
+
+ | attn_kd | 9.97M | 0.8328 | 0.8586 | 0.8564 | 0.8634 | 0.686 | no | −0.0264
+
+ | attn_soft | 9.97M | 0.8272 | 0.8486 | 0.8474 | 0.8518 | 0.681 | no | −0.0363
+
+ | seg_aux | 12.22M | 0.7992 | 0.8301 | 0.8258 | 0.8325 | 0.745 | no | −0.0549
+
+ 768/512 shared backbone, 32 epochs, official split. Sorted by lesion AUC.
+
+ The finding
+
+ The better the network learns to localise the lesion, the worse it classifies. Sort the mask-free variants by IoU — 0.373, 0.686, 0.681, 0.745 — and the AUC loss deepens across the range: −0.0153, −0.0264, −0.0363, −0.0549.
+
+ The mechanism is not the pooling formula. Learning where costs capacity: free attention has no mask loss at all and still loses 0.0153 at n=1,098. Teaching where competes with learning what: every auxiliary localisation loss pulls the shared backbone away from the diagnostic objective, and seg_aux — the heaviest such loss, plus 2.5M extra parameters — is the worst variant in the table.
+
+ The mask variant pays neither cost. It injects known information directly into pooling with zero parameters and zero extra loss term. Localisation information helps only when it is supplied for free.
+
+ Independent corroboration
+
+ This reproduces a finding from the earlier cross-validation era, measured at different resolution under a different protocol: hard gating instead of soft weighting cost −0.11 AUC. Two independent confirmations that the diagnostic signal lives at the lesion margin and is destroyed by anything that restricts pooling rather than modulating it.
+
+ PART IVEleven measured dead ends
+
+ Every one of these is a strategy a reviewer might propose. Each was implemented and measured rather than dismissed, which is why the pre-emption in the paper carries numbers instead of opinions.
+
+ StrategyEffectWhy it failed
+
+ | Cross-architecture ensembling | +0.0009 | Members too correlated; ConvNeXt + ResNet moved the ensemble down
+
+ | Seed averaging | +0.0022 | Variance already low after TTA
+
+ | Extra cross-view aggregation | +0.0008 | Double-counting — lesion-level mean already is two-view combination
+
+ | Density + subtlety fusion | −0.003 | Signal already captured by the auxiliary heads
+
+ | Max vs mean aggregation | ±0.001 | Only 5 of 210 breasts hold mixed labels — too few to move an AUC
+
+ | View-disagreement fusion | −0.0016 | Disagreement is a proxy for low confidence, already in the score
+
+ | Calcification pretraining | −0.0176 | Domain shift between calcification and mass morphology
+
+ | EfficientNet-B0 backbone | −0.0022 | Same input, different weights — no new information
+
+ | RadImageNet initialisation | failed | Would not load / did not converge
+
+ | Handcrafted radiomics fused | weak | 0.6807 alone; too weak to add to a 0.90 model
+
+ | Learned attention replacing the mask | −0.0153 to −0.0549 | See Part III — capacity cost and gradient competition
+
+ Six of these were post-hoc probes on saved predictions. Six nulls in a row is itself a finding: the information in the probabilities is exhausted, and further gains must come from training.
+
+ PART VWhere this sits in the literature
+
+ Comparability requires three things to match: dataset, split, and reporting unit. Input type — ROI versus whole mammogram — does not have to match, but it changes what the comparison means, so it gets its own column.
+
+ StudyInputSplitUnitReportedRelation
+
+ | This work | ROI, two-stream + mask | official | lesion | 0.9043 / 85.7% | —
+
+ | Tsochatzidis et al. 2021 | ROI + mask | verify in PDF | ROI | 0.860 | Head-to-head; needs a mask at inference
+
+ | Busaleh et al. 2021 | multi-context ROI | "provided split" | ROI | sens 98.5 / spec 92.3 | Nearest architectural sibling; verify augmentation order
+
+ | Shen et al. 2019 | whole mammogram | official | image | 0.88 single / 0.91 ×4 | Context — harder task, must localise too
+
+ | Shen et al. 2019 | whole mammogram | official | breast (169) | two-view +0.027 to +0.048 | Matches this pipeline's +0.0245
+
+ | Petrini et al. 2022 | whole mammogram | official and 5-fold | image / breast | pull from PDF | Reports both protocols — useful for either table
+
+ Two split protocols must be verified from the PDFs before publication. An image-level split was measured here to inflate AUC by +0.089 on identical data.
+
+ Stated limitation
+
+ The ROI protocol evaluates diagnosis given a localised lesion, not detection. Every ROI paper carries this, and it belongs in Limitations in one sentence rather than being defended.
+
+ Full mammograms are prepared and verified on disk — 2,089 training, 369 validation, 362 test, all resolving — so the whole-image extension is a concrete future direction rather than a hypothetical one. Estimated at five to nine weeks, with an expected outcome at or below the current numbers.
+
+ PART VIWhat remains
+
+ One optional GPU run
+
+ 5-fold ensemble of the headline configuration over the official training set. Uses all 1,318 training rows, averages five models, and gives properly-powered per-BI-RADS threshold fitting. ~3.5 h, plausibly +0.005 to +0.015.
+
+ Grad-CAM figure
+
+ Attention maps validated quantitatively against ground-truth lesion boundaries — a measurement the comparator papers cannot make, because they do not hold the masks.
+
+ Tables and figures
+
+ Results table, ablation table, dead-end table, comparison table with the protocol column. All four are computed and saved.
+
+ Writing
+
+ The experiments are finished. Everything left is on the page, not the GPU.
+
+ Superseded, kept for the record
+
+ An earlier phase used patient-grouped 5-fold CV with a seven-model greedy ensemble at a 0.70 sensitivity floor, reaching lesion AUC 0.9089 and 87.0% accuracy. It was retired in favour of the official-split single model because a single model on the published split is directly comparable to the literature, whereas a nested-selection ensemble on a custom protocol is not. The earlier numbers should not be mixed into the current tables.
+
+ Build log compiled from the project record. Every figure traces to a saved prediction file or a logged run — officialsplit_all_runs.csv, pooling_ablation_768.csv, and the per-variant test and validation probability files.

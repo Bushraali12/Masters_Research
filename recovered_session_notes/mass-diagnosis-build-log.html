@@ -1,0 +1,579 @@
+<!doctype html><html><head><!-- frame-runtime --><script>window.__FRAME_PREAMBLE={"v":1,"capabilities":{"artifact":"artifact.EF7sW8YL.js","assets":"assets.8Gk803W0.js","comments":"comments.vw5vQdGA.js","db":"db.h-3sndFg.js","downloads":"downloads.C3GSvEDP.js","embed":"embed.CxGAyc-v.js","mcp":"mcp.Bvma3qD7.js","network":"network.B5UA9Su4.js","notifications":"notifications.ssU4jy7G.js","permissions":"permissions.BNySkLV5.js","room":"room.VSdFwTE9.js","sample":"sample.BW2Uysoh.js","self":"artifact.EF7sW8YL.js","user":"user.BpKav-Rf.js"},"transforms":"_transforms.DSB5x63f.js","comments":"_comments.C6E0cR5g.js","translate":"_translate.5HCW4BJh.js"}</script><script>(function(){"use strict";var te=["light","dark","system"],re=/^[A-Za-z0-9_-]{1,64}$/,$=/^[a-zA-Z_:][a-zA-Z0-9_:.-]{0,127}$/,ne=new Set(["class","hidden","value","checked","style","title","alt","placeholder","lang","dir","role","tabindex","disabled","readonly","contenteditable","open","colspan","rowspan"]);function oe(e){const t=e.toLowerCase();return t.startsWith("data-")||t.startsWith("aria-")||ne.has(t)}var Be="http://www.w3.org/1999/xhtml",se="http://www.w3.org/2000/svg",ae=new Set(["script","style","iframe","noscript","noframes","noembed","xmp","plaintext","template","title","textarea","object","embed"]),ie=new Set(["script","style"]);function ce(e){const t=e.localName.toLowerCase();return e.namespaceURI==="http://www.w3.org/1999/xhtml"?!ae.has(t):e.namespaceURI===se?!ie.has(t):!1}function M(e,t){return e===t||(e===160||e===32)&&(t===160||t===32)}function le(e,t){const r=e.length,n=t.length;let s=0;for(;s<r&&s<n&&M(e.charCodeAt(s),t.charCodeAt(s));)s++;let o=0;for(;o<r-s&&o<n-s&&M(e.charCodeAt(r-1-o),t.charCodeAt(n-1-o));)o++;return{p:s,s:o}}function ue(e,t){const r=e.firstChild;if(e.childNodes.length!==1||r===null||r.nodeType!==Node.TEXT_NODE){e.textContent=t;return}const n=r.data,s=n.length,o=t.length,{p:i,s:c}=le(n,t);i===s&&c===0&&s===o||r.replaceData(i,s-i-c,t.slice(i,o-c));const h=r.data,p=e.ownerDocument.getSelection?.()??null,w=p!==null&&p.rangeCount>0&&(p.anchorNode===r||p.focusNode===r)?{anchor:p.anchorNode,anchorOffset:p.anchorOffset,focus:p.focusNode,focusOffset:p.focusOffset}:null;let m=-1,g=-1;for(let f=0;f<h.length&&f<t.length;f++){const v=h.charCodeAt(f),b=t.charCodeAt(f);v!==b&&M(v,b)&&(m<0&&(m=f),g=f)}const a=m>=0;if(a&&r.replaceData(m,g-m+1,t.slice(m,g+1)),a&&w!==null&&w.anchor!==null&&w.focus!==null)try{p.setBaseAndExtent(w.anchor,w.anchorOffset,w.focus,w.focusOffset)}catch{}}var fe=new Set(["html","head","body","frameset"]);function de(e){return e.namespaceURI==="http://www.w3.org/1999/xhtml"&&fe.has(e.localName)}function pe(e){if(e===null||typeof e!="object")return!1;const t=e;if(typeof t.target!="string"||!re.test(t.target)||t.text!==void 0&&typeof t.text!="string")return!1;if(t.attrsSet!==void 0){if(t.attrsSet===null||typeof t.attrsSet!="object")return!1;for(const[r,n]of Object.entries(t.attrsSet))if(!$.test(r)||typeof n!="string")return!1}if(t.attrsRemoved!==void 0){if(!Array.isArray(t.attrsRemoved))return!1;for(const r of t.attrsRemoved)if(typeof r!="string"||!$.test(r))return!1}return!0}function me(e,t){if(e===null||typeof e!="object")return!1;const{seq:r,elements:n}=e;if(typeof r!="number"||!Number.isSafeInteger(r)||!Array.isArray(n)||n.length===0||n.length>64)return!1;for(let s=0;s<n.length;s++)if(!t(n[s]))return!1;return!0}function he(e){return e===null||typeof e!="object"?!1:me(e.__frame_patch,pe)}function _e(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_init;return t!==null&&typeof t=="object"}function ve(e){return e!==null&&typeof e=="object"&&e.__frame_size_poke===!0}function ye(e){if(e===null||typeof e!="object")return!1;const t=e.__frame_theme;if(t===null||typeof t!="object")return!1;const r=t.theme;return typeof r=="string"&&te.includes(r)}var A=/^[\w.-]+\.js$/;function we(e,t,r){return r?"inert":typeof t=="string"&&A.test(t)?e?[t]:"inert":e?"inert":"framed"}function ge(){return{post(e,t){parent.postMessage(e,t)},on(e){const t=r=>{r.source===parent&&e(r.data,r.origin,r.isTrusted)};return addEventListener("message",t),()=>removeEventListener("message",t)}}}function be(){return{post:()=>{},on:()=>()=>{}}}var j="__frame_scroll",Ee=150,Ae=310,Se=160,Te=3e4;function ke(){let e=0,t=!1,r=!1,n=!1,s=0,o=null;const i=l=>{try{sessionStorage.setItem(j,JSON.stringify({y:l}))}catch{}},c=()=>{if(clearTimeout(e),o===null)return;const l=o;o=null,i(l)},h=()=>{if(t){t=!1;return}r=!0,o=scrollY,clearTimeout(e),e=setTimeout(c,Ee)};try{addEventListener("scroll",h,{passive:!0}),addEventListener("pagehide",c)}catch{}const p=()=>{let l;try{l=sessionStorage.getItem(j)}catch{return null}if(l===null)return null;let _;try{_=JSON.parse(l)}catch{_=null}const d=_?.y;if(!(typeof d=="number"&&Number.isFinite(d)&&d>=0)){try{sessionStorage.removeItem(j)}catch{}return null}return d};let w=!1;const m=l=>{try{const _=scrollY;scrollTo({top:l,left:0,behavior:"instant"}),s=l,n=!0,clearTimeout(e),o=null,i(l);const d=scrollY;d!==_&&(t=!0),d!==l&&!w&&(w=!0,addEventListener("load",()=>{try{if(scrollY===d){const T=p();m(T!==null?T:s)}}catch{}},{once:!0}))}catch{}},g=()=>{try{return!!location.hash}catch{return!0}};let a=!1;const f=()=>{try{if(a||innerWidth>Ae||innerHeight>Se)return;a=!0;const l=Date.now(),_=()=>{try{removeEventListener("resize",_)}catch{}if(Date.now()-l>Te||r||g())return;const d=p();m(d!==null?d:s)};addEventListener("resize",_)}catch{}};let v=!1,b=!1;return{restore(){if(v||(v=!0,g()))return;const l=p();l!==null&&(m(l),f())},promoted(){if(b||(b=!0,g()))return;const l=p();l!==null?(m(l),f()):n&&m(s)}}}function Re(e,t,r,n){let s=null;try{s=window.trustedTypes?.createPolicy("frame-runtime",{createScriptURL:h=>h})??null}catch{}const o=window.Worker,i=o?.prototype,c=Object.freeze({Worker:o,workerOn:i?.addEventListener,workerPost:i?.postMessage,workerTerminate:i?.terminate,fetch:window.fetch.bind(window),preventDefault:Event.prototype.preventDefault,policy:s,origins:t});r(e).then(h=>h?.bootTopLevel?h.bootTopLevel(c,n):n.settle()).catch(()=>n.settle())}var De="modulepreload",Ie=function(e){return"/"+e},Ue={},Le=function(t,r,n){let s=Promise.resolve();function o(i){const c=new Event("vite:preloadError",{cancelable:!0});if(c.payload=i,window.dispatchEvent(c),!c.defaultPrevented)throw i}return s.then(i=>{for(const c of i||[])c.status==="rejected"&&o(c.reason);return t().catch(o)})},Oe=window===top,q=Object.getOwnPropertyDescriptor(window,"claude"),k=we(Oe,window.__FRAME_PREAMBLE?.topLevel,q?.writable===!1),N=typeof k=="object"&&k[0],y=N?be():ge();(function(){const e=Object.defineProperty,t=globalThis,r=["RTCPeerConnection","webkitRTCPeerConnection","RTCDataChannel","RTCIceCandidate","RTCSessionDescription","RTCRtpSender","RTCRtpReceiver"];let n=0;for(let s=0;s<r.length;s++){const o=r[s];try{e(t,o,{value:void 0,writable:!1,configurable:!1})}catch{try{delete t[o]}catch{}try{e(t,o,{value:void 0,writable:!1,configurable:!0})}catch{}}typeof t[o]=="function"&&n++}if(n&&k==="framed")try{y.post({__frame_rtc_lockdown_failed:n},"*")}catch{}})();var Pe=1e4,Y=Object.freeze([...window.__FRAME_PREAMBLE?.origins??["https://claude.ai","https://preview.claude.ai"]]);function X(e){for(const t of Y)if(t.endsWith(":*"))try{const r=new URL(e);if(`${r.protocol}//${r.hostname}:*`===t)return!0}catch{}else if(e===t)return!0;return!1}var R=Object.freeze({...window.__FRAME_PREAMBLE?.capabilities}),B=window.__FRAME_PREAMBLE?.transforms,D=window.__FRAME_PREAMBLE?.comments,I=window.__FRAME_PREAMBLE?.translate;function S(e){return Le(()=>import("/_runtime/"+e),void 0)}function G(e,t){return{contract:e.contract,changes:new Set(e.changes??[]),flags:new Set(e.flags??[]),capabilities:e.capabilities??{},capBudgets:e.capBudgets??{},transforms:new Map,shellOrigin:t,mount:x,hooks:O,pipe:()=>({wrap:(r,n)=>(...s)=>{try{return n(...s)}catch(o){return Promise.reject(o)}}})}}var L=null,E=null;function V(e,t,r){try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!1,enumerable:!0})}catch{try{Object.defineProperty(e,t,{value:r,writable:!1,configurable:!0,enumerable:!0})}catch{}}}var U=!1,O={editBefore:null,edit:null};function Ce(e,t,r=!1){const n=[];let s;if(r)try{O.editBefore?.(e)}catch{}for(const o of e.elements){const i=document.querySelector(`[data-id="${o.target}"]`);if(!i){s=o.target;break}if([...Object.keys(o.attrsSet??{}),...o.attrsRemoved??[]].some(c=>!oe(c))){s=o.target;break}if(o.text!==void 0&&(!ce(i)||de(i))){s=o.target;break}for(const[c,h]of Object.entries(o.attrsSet??{}))if(!J(i,c)){try{i.setAttribute(c,h)}catch{}Z(i,c,h)}for(const c of o.attrsRemoved??[])J(i,c)||(i.removeAttribute(c),Z(i,c,null));typeof o.text=="string"&&ue(i,o.text),n.push(o.target)}if(r)try{O.edit?.(e.seq,n,s)}catch{}if(s!==void 0){y.post({__frame_patch_miss:{seq:e.seq}},t);return}try{document.dispatchEvent(new CustomEvent("claude:edit",{detail:{seq:e.seq,targets:n}}))}catch{}}function Z(e,t,r){if(!(e instanceof HTMLInputElement))return;const n=t.toLowerCase();n==="checked"?e.checked=r!==null:n==="value"&&e.type!=="file"&&(e.value=r??"")}function J(e,t){const r=t.toLowerCase(),n=e;return r==="data-id"||(r==="value"||r==="checked")&&(n.__artifactSecret===!0||/^(password|hidden|file)$/.test(n.type??"")||/(^|\s)(cc-|one-time-code|current-password|new-password)/i.test(`${e.getAttribute("autocomplete")??""} ${n.autocomplete??""}`))}function Q(e){const t=document.documentElement;e==="light"||e==="dark"?(t.dataset.theme=e,t.style.colorScheme=e,U=!0):U&&(delete t.dataset.theme,t.style.colorScheme="",U=!1)}var P=new Map;function Me(){let e;const t={u:new Promise(r=>{e=r}),r:r=>{t.done=!0,e(r)},done:!1,nulled:!1};return t}function F(){for(const e of P.values())e.done||(e.nulled=!0,e.r(null))}var je=Object.freeze(Object.assign(Object.create(null),{call:Function.prototype.call,apply:Function.prototype.apply,bind:Function.prototype.bind})),x=(e,t)=>{const r=P.get(e);if(!r||r.done){r?.nulled&&E&&y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:e}},E);return}const n=typeof t=="function"?Object.setPrototypeOf(t,je):Object.assign(Object.create(null),t);typeof n.then=="function"&&delete n.then,r.r(Object.freeze(n))};function ee(){const e=q?.value??{};V(window,"claude",e);for(const t of Object.keys(R)){if(e[t]!==void 0){V(e,t,e[t]);continue}P.set(t,Me())}if(e.use===void 0){const t=r=>{if(typeof r!="string"||!Object.hasOwn(R,r))return Promise.resolve(null);const n=P.get(r);return n?n.u:Promise.resolve(e[r]??null)};try{Object.defineProperty(e,"use",{value:t,writable:!0,configurable:!0,enumerable:!1})}catch{}}}if(k==="framed"){const e=B&&A.test(B)?S(B).catch(()=>{}):Promise.resolve(void 0),t=a=>{if(a.type==="auxclick"&&a.button!==1)return;const f=a.target,v=f&&f.closest?f.closest("a[href],area[href]"):null;if(!v)return;const b=v.getAttribute("href");if(!b)return;let l;try{l=new URL(b,document.baseURI)}catch{return}if((l.protocol==="http:"||l.protocol==="https:")&&l.origin!==location.origin){a.preventDefault();const _=(v.getAttribute("target")??"").toLowerCase(),d=a.type==="auxclick"||a.metaKey||a.ctrlKey||a.shiftKey||a.altKey||!["","_self","_top","_parent"].includes(_);y.post({__frame_nav:!0,url:l.href,newTab:d},"*")}};addEventListener("click",t,!0),addEventListener("auxclick",t,!0);const r={},n=a=>{a.isTrusted&&(r.pointer=!0)},s=a=>{a.isTrusted&&(r.click=!0)};addEventListener("pointermove",n,{capture:!0,passive:!0}),addEventListener("click",s,{capture:!0,passive:!0}),e.then(a=>{a?.wireNav&&(a.wireNav(),removeEventListener("click",t,!0),removeEventListener("auxclick",t,!0),removeEventListener("pointermove",n,!0),removeEventListener("click",s,!0),a.wireEngagement?.(r))});let o=null;try{o=ke()}catch{}ee();let i=null,c=null,h=0;const p=y.on((a,f)=>{X(f)&&_e(a)&&(i=a.__frame_init,E=f,p(),clearTimeout(h),c?.())});y.post({__frame_connect:!0},"*");const w=new Promise(a=>{c=a,h=setTimeout(()=>{p(),a()},Pe)}),m=document.readyState==="loading"?new Promise(a=>document.addEventListener("DOMContentLoaded",()=>a(),{once:!0})):Promise.resolve();m.then(()=>{try{o?.restore()}catch{}});const g={cb:null};y.on((a,f)=>{if(X(f)&&ve(a)){try{o?.promoted()}catch{}g.cb?.()}}),w.then(async()=>{if(!i||!E){F();return}Q(i.theme);const a=E;let f=!1,v=!1;y.on((u,z,C)=>{if(z!==a)return;ye(u)&&Q(u.__frame_theme.theme),he(u)&&Ce(u.__frame_patch,a,C);const H=u?.__fc_mode;H&&typeof H=="object"&&!f&&D&&A.test(D)&&(f=!0,S(D).then(K=>K.install?.(a,H.on===!0)).catch(()=>{}));const W=u?.__ft_cmd;W&&typeof W=="object"&&!v&&I&&A.test(I)&&(v=!0,S(I).then(K=>K.install?.(a,W)).catch(()=>{}))});const b=Object.keys(i.capabilities??{}).filter(u=>Object.hasOwn(R,u)).map(u=>[u,R[u]]).filter(u=>typeof u[1]=="string"&&A.test(u[1])),l=await Promise.allSettled(b.map(([,u])=>S(u))),_=await e,d=E;if(_?.buildBoot||y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),_?.buildBoot)try{L=_.buildBoot(i,_.TRANSFORMS??{},{shellOrigin:d,mount:x,hooks:O},u=>y.post({__frame_cap_telemetry:u},d))}catch{y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:"_transforms"}},d),L=G(i,d)}else L=G(i,d);const T=u=>y.post({__frame_cap_telemetry:{kind:"cap-load-error",cap:u}},d),Ne=L;l.forEach((u,z)=>{const C=b[z][0];if(u.status!=="fulfilled"){T(C);return}try{u.value?.install?.(Ne)}catch{T(C)}}),F(),await m,y.post({__frame_ready:!0},E),e.then(u=>u?.installSizeReporter?.(d,g))})}else N&&(ee(),Re(N,Y,S,{settle:F,mount:x}))})();</script><!-- /frame-runtime --><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
+<title>Mass Diagnosis Build Log</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=Source+Sans+3:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+:root{
+  --paper:#eceef0; --card:#ffffff; --card2:#f5f7f8;
+  --ink:#131a20; --body:#2c3841; --muted:#5c6a75; --faint:#8695a0;
+  --line:#d6dbdf; --line2:#e6eaec;
+  --sig:#0d6b74; --sig-soft:#d8ebec;
+  --up:#17693f; --up-soft:#dcefe3;
+  --down:#a33530; --down-soft:#f6e0de;
+  --flat:#6b7780; --flat-soft:#e6eaec;
+  --shadow:0 1px 2px rgba(19,26,32,.05),0 8px 24px -14px rgba(19,26,32,.22);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#0f1518; --card:#161f24; --card2:#1b262c;
+    --ink:#e8eef1; --body:#c3cfd6; --muted:#8fa1ab; --faint:#6c7d87;
+    --line:#26333a; --line2:#1f2b31;
+    --sig:#57b8bf; --sig-soft:#12333a;
+    --up:#57c98d; --up-soft:#123227;
+    --down:#ea8078; --down-soft:#35201f;
+    --flat:#8b98a1; --flat-soft:#1f2b31;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px -16px rgba(0,0,0,.8);
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0f1518; --card:#161f24; --card2:#1b262c;
+  --ink:#e8eef1; --body:#c3cfd6; --muted:#8fa1ab; --faint:#6c7d87;
+  --line:#26333a; --line2:#1f2b31;
+  --sig:#57b8bf; --sig-soft:#12333a;
+  --up:#57c98d; --up-soft:#123227;
+  --down:#ea8078; --down-soft:#35201f;
+  --flat:#8b98a1; --flat-soft:#1f2b31;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 26px -16px rgba(0,0,0,.8);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--paper); color:var(--body);
+  font-family:"Source Sans 3",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.62; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1020px; margin:0 auto; padding:0 22px 88px}
+h1,h2,h3,h4{font-family:"Source Serif 4",Georgia,serif; color:var(--ink); text-wrap:balance; margin:0}
+.mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace; font-variant-numeric:tabular-nums}
+
+/* ---------- masthead ---------- */
+header{padding:64px 0 34px; border-bottom:2px solid var(--ink)}
+.kicker{
+  font-family:"IBM Plex Mono",monospace; font-size:11.5px; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--sig); font-weight:600; margin-bottom:16px;
+}
+h1{font-size:clamp(34px,5.6vw,54px); line-height:1.06; font-weight:700; letter-spacing:-.018em}
+.standfirst{
+  font-family:"Source Serif 4",Georgia,serif; font-size:clamp(17px,2.1vw,20px);
+  line-height:1.5; color:var(--muted); margin-top:18px; max-width:64ch;
+}
+.byline{
+  margin-top:22px; font-size:13px; color:var(--faint);
+  font-family:"IBM Plex Mono",monospace; letter-spacing:.02em;
+}
+
+/* ---------- headline stats ---------- */
+.stats{
+  display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr));
+  gap:1px; background:var(--line); border:1px solid var(--line);
+  margin:34px 0 8px; border-radius:3px; overflow:hidden;
+}
+.stat{background:var(--card); padding:18px 16px}
+.stat .v{font-family:"IBM Plex Mono",monospace; font-size:25px; font-weight:600;
+  color:var(--ink); font-variant-numeric:tabular-nums; line-height:1.1}
+.stat .k{font-size:11.5px; letter-spacing:.09em; text-transform:uppercase;
+  color:var(--muted); margin-top:7px; font-weight:600}
+.stat .s{font-size:12.5px; color:var(--faint); margin-top:3px}
+
+/* ---------- sections ---------- */
+section{margin-top:62px}
+.sec-head{display:flex; align-items:baseline; gap:14px; margin-bottom:8px;
+  padding-bottom:11px; border-bottom:1px solid var(--line)}
+.sec-num{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--sig);
+  font-weight:600; letter-spacing:.1em}
+h2{font-size:clamp(22px,3vw,29px); font-weight:600; letter-spacing:-.012em}
+.sec-intro{color:var(--muted); margin:16px 0 26px; max-width:70ch}
+
+/* ---------- timeline ---------- */
+.tl{position:relative; margin-top:8px}
+.tl::before{content:""; position:absolute; left:26px; top:12px; bottom:12px;
+  width:2px; background:var(--line)}
+.step{position:relative; padding-left:70px; margin-bottom:26px}
+.step .dot{
+  position:absolute; left:0; top:2px; width:54px; height:54px; border-radius:50%;
+  background:var(--card); border:2px solid var(--line);
+  display:flex; align-items:center; justify-content:center;
+  font-family:"IBM Plex Mono",monospace; font-weight:600; font-size:15px; color:var(--muted);
+}
+.step.key .dot{border-color:var(--sig); color:var(--sig); background:var(--sig-soft)}
+.step.dead .dot{border-color:var(--line); color:var(--faint)}
+.card{
+  background:var(--card); border:1px solid var(--line); border-radius:4px;
+  padding:20px 22px; box-shadow:var(--shadow);
+}
+.step.key .card{border-left:3px solid var(--sig)}
+.card h3{font-size:19px; font-weight:600; margin-bottom:4px; letter-spacing:-.008em}
+.when{font-family:"IBM Plex Mono",monospace; font-size:11.5px; color:var(--faint);
+  letter-spacing:.05em; text-transform:uppercase; margin-bottom:10px}
+.card p{margin:10px 0 0}
+.card p:first-of-type{margin-top:12px}
+
+/* result line inside a card */
+.res{
+  display:flex; flex-wrap:wrap; align-items:center; gap:10px;
+  margin-top:15px; padding-top:14px; border-top:1px solid var(--line2);
+}
+.metric{font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:600; color:var(--ink)}
+.mlabel{font-size:12.5px; color:var(--muted)}
+.chip{
+  font-family:"IBM Plex Mono",monospace; font-size:12.5px; font-weight:600;
+  padding:3px 9px; border-radius:3px; white-space:nowrap;
+}
+.chip.up{background:var(--up-soft); color:var(--up)}
+.chip.down{background:var(--down-soft); color:var(--down)}
+.chip.flat{background:var(--flat-soft); color:var(--flat)}
+.chip.sig{background:var(--sig-soft); color:var(--sig)}
+
+/* ---------- tables ---------- */
+.tscroll{overflow-x:auto; border:1px solid var(--line); border-radius:4px;
+  background:var(--card); box-shadow:var(--shadow); margin:22px 0}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:520px}
+th{
+  text-align:left; font-family:"Source Sans 3",sans-serif; font-weight:600;
+  font-size:11.5px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted);
+  padding:12px 14px; border-bottom:1px solid var(--line); background:var(--card2);
+  white-space:nowrap;
+}
+td{padding:10px 14px; border-bottom:1px solid var(--line2); color:var(--body)}
+tbody tr:last-child td{border-bottom:none}
+td.n,th.n{text-align:right; font-family:"IBM Plex Mono",monospace;
+  font-variant-numeric:tabular-nums; white-space:nowrap}
+tr.hi td{background:var(--sig-soft); font-weight:600; color:var(--ink)}
+tr.hi td.n{color:var(--ink)}
+.win{color:var(--up); font-weight:600}
+.lose{color:var(--down); font-weight:600}
+caption{
+  caption-side:bottom; text-align:left; padding:11px 14px; font-size:12.5px;
+  color:var(--faint); border-top:1px solid var(--line2);
+}
+
+/* ---------- callouts ---------- */
+.note{
+  border-left:3px solid var(--sig); background:var(--card);
+  padding:16px 20px; margin:22px 0; border-radius:0 4px 4px 0;
+  border-top:1px solid var(--line); border-right:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.note.warn{border-left-color:var(--down)}
+.note .lbl{
+  font-family:"IBM Plex Mono",monospace; font-size:11px; letter-spacing:.13em;
+  text-transform:uppercase; color:var(--sig); font-weight:600; margin-bottom:7px;
+}
+.note.warn .lbl{color:var(--down)}
+.note p{margin:0}
+.note p + p{margin-top:10px}
+
+/* ---------- misc ---------- */
+.grid2{display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:18px; margin:22px 0}
+.mini{background:var(--card); border:1px solid var(--line); border-radius:4px; padding:17px 19px}
+.mini h4{font-size:15px; font-weight:600; margin-bottom:7px}
+.mini p{margin:0; font-size:14px; color:var(--muted)}
+ul.tight{margin:12px 0; padding-left:20px}
+ul.tight li{margin:6px 0}
+strong{color:var(--ink); font-weight:600}
+code{font-family:"IBM Plex Mono",monospace; font-size:.88em;
+  background:var(--card2); padding:1.5px 5px; border-radius:3px; color:var(--ink)}
+a{color:var(--sig)}
+.foot{margin-top:66px; padding-top:22px; border-top:1px solid var(--line);
+  font-size:13px; color:var(--faint)}
+@media(max-width:620px){
+  .step{padding-left:0}
+  .tl::before{display:none}
+  .step .dot{position:static; margin-bottom:10px; width:42px; height:42px; font-size:13px}
+}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">CBIS-DDSM · Mass Diagnosis · Build Log</div>
+  <h1>From 0.68 to 0.90</h1>
+  <p class="standfirst">Every step of the pipeline in the order it was built — what was added, what it was worth, and what was thrown away. Fifteen stages, four reporting units, and eleven measured dead ends.</p>
+  <div class="byline">Official CBIS-DDSM split · patient-disjoint · 1,696 ROIs / 1,005 lesions / 892 patients</div>
+
+  <div class="stats">
+    <div class="stat"><div class="v">0.9043</div><div class="k">Lesion AUC</div><div class="s">official test, n=223</div></div>
+    <div class="stat"><div class="v">85.7%</div><div class="k">Accuracy</div><div class="s">sens floor 0.90</div></div>
+    <div class="stat"><div class="v">0.9065</div><div class="k">Seg. Dice</div><div class="s">5-model average</div></div>
+    <div class="stat"><div class="v">+5.83</div><div class="k">Novelty 2</div><div class="s">accuracy points</div></div>
+    <div class="stat"><div class="v">11</div><div class="k">Dead ends</div><div class="s">measured, not guessed</div></div>
+  </div>
+</header>
+
+<!-- ============ THE BUILD ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART I</span><h2>The build, in order</h2></div>
+  <p class="sec-intro">Each stage is one decision. The number under it is the pooled lesion-level AUC on the official test set unless stated otherwise, and the chip is what that stage was worth against the stage before it.</p>
+
+  <div class="tl">
+
+    <div class="step">
+      <div class="dot">01</div>
+      <div class="card">
+        <h3>Data foundation and the reporting units</h3>
+        <div class="when">Starting point</div>
+        <p>The CBIS-DDSM mass subset: <strong>1,696 ROI crops</strong>, 912 benign and 784 malignant, resolving to <strong>1,005 lesions</strong>, 932 breasts and 892 patients. This is the standard benchmark subset other ROI papers report on, which makes the work directly comparable rather than idiosyncratic.</p>
+        <p>Four reporting units were defined up front. ROI → lesion by <em>mean</em> score (the CC and MLO crops show the same object). Lesion → breast → patient by <em>mean</em> score and <em>max</em> label. BI-RADS aggregates by max.</p>
+        <div class="res"><span class="mlabel">Official test cohort</span><span class="metric">378 ROI · 361 mammograms · 223 lesions · 210 breasts · 201 patients</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">02</div>
+      <div class="card">
+        <h3>Split integrity, audited before anything was trained</h3>
+        <div class="when">Foundation</div>
+        <p>Every split is patient-grouped. A later full audit confirmed <strong>zero straddling</strong> at mammogram, breast, lesion and patient level simultaneously — so the 71 mammograms carrying more than one abnormality can never leak across the train/test line.</p>
+        <p>Crop integrity was checked separately: 0 unreadable files, 0 crops contaminated by the well-known CBIS-DDSM crop/mask ordering bug, all 512×512, median 116 distinct intensity levels.</p>
+        <div class="res">
+          <span class="chip sig">mammo 0</span><span class="chip sig">breast 0</span>
+          <span class="chip sig">lesion 0</span><span class="chip sig">patient 0</span>
+          <span class="mlabel">records straddling train/test</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">03</div>
+      <div class="card">
+        <h3>Stage 1 — segmentation: DS-Attn-UNet with ASPP</h3>
+        <div class="when">First model</div>
+        <p>A deeply-supervised attention U-Net with an ASPP bottleneck, trained patient-blind. Masks used downstream always come from a model that never saw that patient. An ablation attributed <strong>86% of the Dice gain to the ASPP bottleneck</strong>.</p>
+        <p>Provenance was verified: Dice on training-fold images 0.898 versus 0.905 held out — no memorisation.</p>
+        <div class="res">
+          <span class="metric">Dice 0.9065</span><span class="mlabel">5-model average on test · per-fold 0.8972 ± 0.0040</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">04</div>
+      <div class="card">
+        <h3>Baseline floor — handcrafted radiomic features</h3>
+        <div class="when">Classifier v0</div>
+        <p>Shape, texture and intensity features from the ROI, classified conventionally. This established how much of the problem is <em>not</em> solvable by traditional descriptors.</p>
+        <div class="res"><span class="metric">0.6807</span><span class="mlabel">lesion AUC</span><span class="chip flat">floor</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">05</div>
+      <div class="card">
+        <h3>First CNN — single tight crop, DenseNet-121</h3>
+        <div class="when">Classifier v1</div>
+        <p>ImageNet-pretrained DenseNet-121, one 512×512 lesion-centred crop, plain global average pooling. No mask, no context, no auxiliary heads. This is the mask-blind control that every later gain is measured against.</p>
+        <div class="res"><span class="metric">0.8092</span><span class="mlabel">lesion AUC</span><span class="chip up">+0.1285 over radiomics</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">06</div>
+      <div class="card">
+        <h3>Training recipe: transfer learning, focal loss, auxiliary heads</h3>
+        <div class="when">Classifier v2</div>
+        <p>Progressive unfreezing (3 frozen epochs, then discriminative learning rates — 3e-5 backbone, 3e-4 head), focal loss γ=2 with class weighting, CLAHE, and three auxiliary heads predicting <code>subtlety</code>, <code>mass_shape</code> and <code>mass_margins</code> at weight 0.3. Four-fold test-time augmentation.</p>
+        <div class="res"><span class="metric">0.8715</span><span class="mlabel">lesion AUC</span><span class="chip up">+0.0623</span></div>
+      </div>
+    </div>
+
+    <div class="step key">
+      <div class="dot">07</div>
+      <div class="card">
+        <h3>Two-stream input: tight crop plus wide context</h3>
+        <div class="when">The largest single gain</div>
+        <p>A second input branch carrying a wider crop around the lesion, giving the network the peritumoral region — margin, spiculation, surrounding architecture — alongside the lesion itself. Features from both streams concatenated before the head.</p>
+        <p>Subgroup analysis showed the wide stream helps most exactly where it should: circumscribed margins <span class="mono">+0.0587</span>, round shapes <span class="mono">+0.0572</span>, mid-subtlety lesions <span class="mono">+0.0253</span>.</p>
+        <div class="res"><span class="metric">0.8816</span><span class="mlabel">lesion AUC, no mask</span><span class="chip up">+0.0724 over single crop</span></div>
+      </div>
+    </div>
+
+    <div class="step key">
+      <div class="dot">08</div>
+      <div class="card">
+        <h3>Novelty 1 — mask-weighted dual pooling</h3>
+        <div class="when">First contribution</div>
+        <p>The segmenter's own prediction becomes a pooling weight: <code>w = 1 + 2·m</code>. The feature map is pooled <em>twice</em> — once weighted, once unweighted — and both descriptors are concatenated. The lesion is emphasised without the surrounding tissue being discarded, and the module is <strong>parameter-free</strong>.</p>
+        <p>Verified not to be a mask-quality artifact: correlation between per-image Dice and classification gain was <span class="mono">+0.0062 [−0.095, +0.107]</span>.</p>
+        <div class="res"><span class="metric">0.9043</span><span class="mlabel">lesion AUC</span><span class="chip up">+0.0227 over the same model without the mask</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">09</div>
+      <div class="card">
+        <h3>Two-view combination, recognised for what it is</h3>
+        <div class="when">Reframing, not new work</div>
+        <p>Averaging the CC and MLO crops of one lesion <em>is</em> two-view combination — the same operation Shen et al. perform at breast level. Measured on this pipeline: ROI 0.8571 → lesion 0.8816.</p>
+        <div class="res"><span class="metric">+0.0245</span><span class="mlabel">two-view gain — inside Shen's reported [+0.018, +0.064] band</span></div>
+      </div>
+    </div>
+
+    <div class="step key">
+      <div class="dot">10</div>
+      <div class="card">
+        <h3>Novelty 2 — per-BI-RADS decision layer</h3>
+        <div class="when">Second contribution</div>
+        <p>Rather than one global threshold, a separate threshold per BI-RADS category, all fitted <em>jointly</em> by multi-start coordinate ascent under a <strong>single cohort-level sensitivity floor</strong>. The mechanism is prevalence stratification: BI-RADS 3 is ~5% malignant, BI-RADS 5 is ~95%, so one cut-point cannot serve both.</p>
+        <p>Per-stratum floors are degenerate here — BI-RADS 2 contains exactly one malignant lesion — which is precisely why one cohort-level constraint is required.</p>
+        <div class="res">
+          <span class="metric">85.7%</span><span class="mlabel">lesion accuracy</span>
+          <span class="chip up">+5.83 points</span>
+          <span class="chip sig">bootstrap +5.32 [+2.57, +8.11]</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">11</div>
+      <div class="card">
+        <h3>Protocol decision — official split as headline</h3>
+        <div class="when">Methodological</div>
+        <p>Both protocols were run. The official CBIS-DDSM split became the headline because it is what the comparable literature reports; patient-grouped 5-fold CV is reported as the secondary, and it comes in <em>lower</em> at every unit (−0.0035 to −0.0197), which is the honest direction.</p>
+        <p>An image-level split was measured on the identical model and data and inflated AUC by <strong>+0.089</strong>. That single number explains most of the implausible results in this literature, and it is reported.</p>
+        <div class="res"><span class="metric">CV 0.8885</span><span class="mlabel">lesion AUC, secondary protocol</span><span class="chip down">−0.0158 vs official</span></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">12</div>
+      <div class="card">
+        <h3>Robustness and adversarial self-checks</h3>
+        <div class="when">Validation</div>
+        <p>Out-of-fold status of training predictions confirmed four independent ways. Mask provenance ≤0.007 AUC. BI-RADS 5 removed entirely — accuracy still 77.9–80.3%, so the result is not carried by the easy stratum. And a BI-RADS noise simulation: at 90% category accuracy the decision layer keeps <strong>82% of its gain</strong>, at 85% it keeps 76%, and it never falls below break-even down to 50%.</p>
+        <div class="res"><span class="chip sig">4-way OOF check</span><span class="chip sig">mask provenance</span><span class="chip sig">BI-RADS 5 removed</span><span class="chip sig">noise simulation</span></div>
+      </div>
+    </div>
+
+    <div class="step key">
+      <div class="dot">13</div>
+      <div class="card">
+        <h3>Resolution and weight sharing</h3>
+        <div class="when">Latest gain</div>
+        <p>Tight stream 512 → 768, wide stream 384 → 512, and the two separate backbones collapsed into <strong>one shared-weight DenseNet-121</strong>. Parameters fell from 15.75M to 8.79M and every unit improved. Mammographic malignancy lives in margin detail, which downsampling destroys.</p>
+        <div class="res">
+          <span class="metric">0.8932</span><span class="mlabel">lesion AUC, no mask</span>
+          <span class="chip up">+0.0116</span><span class="chip sig">44% fewer parameters</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="dot">14</div>
+      <div class="card">
+        <h3>Seven-variant pooling ablation</h3>
+        <div class="when">Today</div>
+        <p>Four attempts to obtain the mask's benefit <em>without</em> a mask at inference — GeM pooling, free attention pooling, mask-distilled attention, soft attention re-weighting, and an auxiliary segmentation decoder. Everything else held identical: same crops, split, schedule, augmentation, loss, TTA, and a parameter-matched 3072-d descriptor.</p>
+        <p><strong>All four failed, and failed in proportion to how well they localised.</strong> Full table in Part III.</p>
+        <div class="res"><span class="metric">mask 0.9016</span><span class="mlabel">best of seven</span><span class="chip down">every mask-free route below baseline</span></div>
+      </div>
+    </div>
+
+    <div class="step key">
+      <div class="dot">15</div>
+      <div class="card">
+        <h3>Where it stands</h3>
+        <div class="when">Current</div>
+        <p>Final model: two-stream DenseNet-121 with mask-weighted dual pooling, official split, plus the per-BI-RADS decision layer. Lesion AUC <strong>0.9043</strong>, accuracy <strong>85.7%</strong> at a 0.90 sensitivity floor.</p>
+        <p>The architecture search is closed. Seven pooling variants and eleven post-hoc strategies have been measured; the remaining work is one optional 5-fold ensemble run and the writing.</p>
+        <div class="res"><span class="chip sig">experiments complete</span><span class="chip sig">ablation table complete</span></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ FINAL RESULTS ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART II</span><h2>Final results</h2></div>
+  <p class="sec-intro">Official CBIS-DDSM test set, patient-disjoint. Two-stream DenseNet-121 with mask-weighted dual pooling and the per-BI-RADS decision layer at a 0.90 cohort sensitivity floor. Confidence intervals from patient-clustered bootstrap.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr>
+        <th>Unit</th><th class="n">n</th><th class="n">AUC [95% CI]</th>
+        <th class="n">Accuracy [95% CI]</th><th class="n">Sens</th><th class="n">Spec</th><th class="n">Missed</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>ROI</td><td class="n">378</td><td class="n">0.8769 [0.828–0.918]</td><td class="n">81.0% [76.3–85.4]</td><td class="n">0.878</td><td class="n">0.766</td><td class="n">18 / 147</td></tr>
+        <tr class="hi"><td>Lesion</td><td class="n">223</td><td class="n">0.9043 [0.858–0.941]</td><td class="n">85.7% [80.8–90.1]</td><td class="n">0.885</td><td class="n">0.838</td><td class="n">10 / 87</td></tr>
+        <tr><td>Breast</td><td class="n">210</td><td class="n">0.9016 [0.855–0.940]</td><td class="n">84.8% [79.6–89.5]</td><td class="n">0.882</td><td class="n">0.824</td><td class="n">10 / 85</td></tr>
+        <tr><td>Patient</td><td class="n">201</td><td class="n">0.9041 [0.859–0.944]</td><td class="n">85.1% [80.1–90.0]</td><td class="n">0.882</td><td class="n">0.828</td><td class="n">10 / 85</td></tr>
+      </tbody>
+      <caption>Headline row is lesion level — the unit the comparable ROI literature reports.</caption>
+    </table>
+  </div>
+
+  <div class="grid2">
+    <div class="mini">
+      <h4>Secondary protocol — 5-fold CV</h4>
+      <p>ROI 0.8734 · lesion 0.8885 · breast 0.8869 · patient 0.8844. Below the official split at every unit, which is the direction that inspires confidence rather than suspicion.</p>
+    </div>
+    <div class="mini">
+      <h4>Frozen operating point</h4>
+      <p class="mono" style="font-size:13px">{0: 0.515, 1: 0.44, 2: 0.44, 3: 0.495, 4: 0.455, 5: 0.01}</p>
+      <p style="margin-top:8px">Global threshold 0.44. Fitted on official training out-of-fold predictions only.</p>
+    </div>
+  </div>
+
+  <h3 style="font-size:19px; margin:34px 0 4px">Where Novelty 2 earns its gain</h3>
+  <p class="sec-intro" style="margin:10px 0 18px">Decomposition of the +20 net correct calls at ROI level. The gain comes from the ambiguous strata, not the obvious ones.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>BI-RADS</th><th>Prior malignancy</th><th class="n">Contribution</th><th>Reading</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>3</td><td>~5% malignant</td><td class="n">+11</td><td>Threshold raised — benign-leaning stratum stops producing false positives</td></tr>
+        <tr><td>0</td><td>incomplete</td><td class="n">+5</td><td>Needs its own cut-point; lost entirely if fitting data is thin</td></tr>
+        <tr><td>4</td><td>mixed</td><td class="n">+3</td><td>The hard stratum — 42% of lesions, 72% of all errors</td></tr>
+        <tr><td>5</td><td>~95% malignant</td><td class="n">+1</td><td>Near-zero. The gain is <em>not</em> coming from the easy cases</td></tr>
+      </tbody>
+      <caption>Gain by unit: ROI +5.29 · lesion +5.83 · breast +6.19 · patient +5.97 accuracy points.</caption>
+    </table>
+  </div>
+</section>
+
+<!-- ============ ABLATIONS ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART III</span><h2>Ablations</h2></div>
+
+  <h3 style="font-size:19px; margin-bottom:4px">What the mask is worth</h3>
+  <p class="sec-intro" style="margin:10px 0 0">Identical model, identical everything, mask-weighted pooling on or off. Positive at every unit.</p>
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Unit</th><th class="n">No mask</th><th class="n">With mask</th><th class="n">Δ</th></tr></thead>
+      <tbody>
+        <tr><td>ROI</td><td class="n">0.8571</td><td class="n">0.8769</td><td class="n win">+0.0198</td></tr>
+        <tr class="hi"><td>Lesion</td><td class="n">0.8816</td><td class="n">0.9043</td><td class="n win">+0.0227</td></tr>
+        <tr><td>Breast</td><td class="n">0.8746</td><td class="n">0.9021</td><td class="n win">+0.0275</td></tr>
+        <tr><td>Patient</td><td class="n">0.8797</td><td class="n">0.9043</td><td class="n win">+0.0246</td></tr>
+      </tbody>
+      <caption>Tsochatzidis et al. independently report +0.028 from adding segmentation information on the same dataset — two studies converging on the same effect size.</caption>
+    </table>
+  </div>
+
+  <h3 style="font-size:19px; margin:38px 0 4px">The seven-variant pooling ablation</h3>
+  <p class="sec-intro" style="margin:10px 0 0">Tight-stream pooling is the only variable. Everything else — crops, split, schedule, augmentation, loss, TTA, descriptor width — is held constant. IoU measures how well the learned map overlaps the true lesion.</p>
+  <div class="tscroll">
+    <table>
+      <thead><tr>
+        <th>Variant</th><th class="n">Params</th><th class="n">ROI</th><th class="n">Lesion</th>
+        <th class="n">Breast</th><th class="n">Patient</th><th class="n">IoU</th><th>Mask at inference</th><th class="n">Δ vs GAP</th>
+      </tr></thead>
+      <tbody>
+        <tr class="hi"><td>mask</td><td class="n">9.71M</td><td class="n">0.8702</td><td class="n">0.9016</td><td class="n">0.8953</td><td class="n">0.8966</td><td class="n">—</td><td>yes</td><td class="n win">+0.0166</td></tr>
+        <tr><td>gap</td><td class="n">9.71M</td><td class="n">0.8571</td><td class="n">0.8850</td><td class="n">0.8791</td><td class="n">0.8838</td><td class="n">—</td><td>no</td><td class="n">baseline</td></tr>
+        <tr><td>gem</td><td class="n">9.71M</td><td class="n">0.8536</td><td class="n">0.8767</td><td class="n">0.8708</td><td class="n">0.8731</td><td class="n">—</td><td>no</td><td class="n lose">−0.0083</td></tr>
+        <tr><td>attn</td><td class="n">9.97M</td><td class="n">0.8410</td><td class="n">0.8697</td><td class="n">0.8653</td><td class="n">0.8723</td><td class="n">0.373</td><td>no</td><td class="n lose">−0.0153</td></tr>
+        <tr><td>attn_kd</td><td class="n">9.97M</td><td class="n">0.8328</td><td class="n">0.8586</td><td class="n">0.8564</td><td class="n">0.8634</td><td class="n">0.686</td><td>no</td><td class="n lose">−0.0264</td></tr>
+        <tr><td>attn_soft</td><td class="n">9.97M</td><td class="n">0.8272</td><td class="n">0.8486</td><td class="n">0.8474</td><td class="n">0.8518</td><td class="n">0.681</td><td>no</td><td class="n lose">−0.0363</td></tr>
+        <tr><td>seg_aux</td><td class="n">12.22M</td><td class="n">0.7992</td><td class="n">0.8301</td><td class="n">0.8258</td><td class="n">0.8325</td><td class="n">0.745</td><td>no</td><td class="n lose">−0.0549</td></tr>
+      </tbody>
+      <caption>768/512 shared backbone, 32 epochs, official split. Sorted by lesion AUC.</caption>
+    </table>
+  </div>
+
+  <div class="note">
+    <div class="lbl">The finding</div>
+    <p><strong>The better the network learns to localise the lesion, the worse it classifies.</strong> Sort the mask-free variants by IoU — 0.373, 0.686, 0.681, 0.745 — and the AUC loss deepens across the range: −0.0153, −0.0264, −0.0363, −0.0549.</p>
+    <p>The mechanism is not the pooling formula. Learning <em>where</em> costs capacity: free attention has no mask loss at all and still loses 0.0153 at n=1,098. Teaching <em>where</em> competes with learning <em>what</em>: every auxiliary localisation loss pulls the shared backbone away from the diagnostic objective, and <code>seg_aux</code> — the heaviest such loss, plus 2.5M extra parameters — is the worst variant in the table.</p>
+    <p>The mask variant pays neither cost. It injects known information directly into pooling with zero parameters and zero extra loss term. <strong>Localisation information helps only when it is supplied for free.</strong></p>
+  </div>
+
+  <div class="note">
+    <div class="lbl">Independent corroboration</div>
+    <p>This reproduces a finding from the earlier cross-validation era, measured at different resolution under a different protocol: <strong>hard gating instead of soft weighting cost −0.11 AUC</strong>. Two independent confirmations that the diagnostic signal lives at the lesion margin and is destroyed by anything that restricts pooling rather than modulating it.</p>
+  </div>
+</section>
+
+<!-- ============ DEAD ENDS ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART IV</span><h2>Eleven measured dead ends</h2></div>
+  <p class="sec-intro">Every one of these is a strategy a reviewer might propose. Each was implemented and measured rather than dismissed, which is why the pre-emption in the paper carries numbers instead of opinions.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Strategy</th><th class="n">Effect</th><th>Why it failed</th></tr></thead>
+      <tbody>
+        <tr><td>Cross-architecture ensembling</td><td class="n lose">+0.0009</td><td>Members too correlated; ConvNeXt + ResNet moved the ensemble <em>down</em></td></tr>
+        <tr><td>Seed averaging</td><td class="n lose">+0.0022</td><td>Variance already low after TTA</td></tr>
+        <tr><td>Extra cross-view aggregation</td><td class="n lose">+0.0008</td><td>Double-counting — lesion-level mean already <em>is</em> two-view combination</td></tr>
+        <tr><td>Density + subtlety fusion</td><td class="n lose">−0.003</td><td>Signal already captured by the auxiliary heads</td></tr>
+        <tr><td>Max vs mean aggregation</td><td class="n lose">±0.001</td><td>Only 5 of 210 breasts hold mixed labels — too few to move an AUC</td></tr>
+        <tr><td>View-disagreement fusion</td><td class="n lose">−0.0016</td><td>Disagreement is a proxy for low confidence, already in the score</td></tr>
+        <tr><td>Calcification pretraining</td><td class="n lose">−0.0176</td><td>Domain shift between calcification and mass morphology</td></tr>
+        <tr><td>EfficientNet-B0 backbone</td><td class="n lose">−0.0022</td><td>Same input, different weights — no new information</td></tr>
+        <tr><td>RadImageNet initialisation</td><td class="n lose">failed</td><td>Would not load / did not converge</td></tr>
+        <tr><td>Handcrafted radiomics fused</td><td class="n lose">weak</td><td>0.6807 alone; too weak to add to a 0.90 model</td></tr>
+        <tr><td>Learned attention replacing the mask</td><td class="n lose">−0.0153 to −0.0549</td><td>See Part III — capacity cost and gradient competition</td></tr>
+      </tbody>
+      <caption>Six of these were post-hoc probes on saved predictions. Six nulls in a row is itself a finding: the information in the probabilities is exhausted, and further gains must come from training.</caption>
+    </table>
+  </div>
+</section>
+
+<!-- ============ COMPARATORS ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART V</span><h2>Where this sits in the literature</h2></div>
+  <p class="sec-intro">Comparability requires three things to match: dataset, split, and reporting unit. Input type — ROI versus whole mammogram — does not have to match, but it changes what the comparison means, so it gets its own column.</p>
+
+  <div class="tscroll">
+    <table>
+      <thead><tr><th>Study</th><th>Input</th><th>Split</th><th>Unit</th><th class="n">Reported</th><th>Relation</th></tr></thead>
+      <tbody>
+        <tr class="hi"><td>This work</td><td>ROI, two-stream + mask</td><td>official</td><td>lesion</td><td class="n">0.9043 / 85.7%</td><td>—</td></tr>
+        <tr><td>Tsochatzidis et al. 2021</td><td>ROI + mask</td><td>verify in PDF</td><td>ROI</td><td class="n">0.860</td><td>Head-to-head; needs a mask at inference</td></tr>
+        <tr><td>Busaleh et al. 2021</td><td>multi-context ROI</td><td>"provided split"</td><td>ROI</td><td class="n">sens 98.5 / spec 92.3</td><td>Nearest architectural sibling; verify augmentation order</td></tr>
+        <tr><td>Shen et al. 2019</td><td>whole mammogram</td><td>official</td><td>image</td><td class="n">0.88 single / 0.91 ×4</td><td>Context — harder task, must localise too</td></tr>
+        <tr><td>Shen et al. 2019</td><td>whole mammogram</td><td>official</td><td>breast (169)</td><td class="n">two-view +0.027 to +0.048</td><td>Matches this pipeline's +0.0245</td></tr>
+        <tr><td>Petrini et al. 2022</td><td>whole mammogram</td><td>official <em>and</em> 5-fold</td><td>image / breast</td><td class="n">pull from PDF</td><td>Reports both protocols — useful for either table</td></tr>
+      </tbody>
+      <caption>Two split protocols must be verified from the PDFs before publication. An image-level split was measured here to inflate AUC by +0.089 on identical data.</caption>
+    </table>
+  </div>
+
+  <div class="note warn">
+    <div class="lbl">Stated limitation</div>
+    <p>The ROI protocol evaluates <em>diagnosis</em> given a localised lesion, not <em>detection</em>. Every ROI paper carries this, and it belongs in Limitations in one sentence rather than being defended.</p>
+    <p>Full mammograms are prepared and verified on disk — 2,089 training, 369 validation, 362 test, all resolving — so the whole-image extension is a concrete future direction rather than a hypothetical one. Estimated at five to nine weeks, with an expected outcome at or below the current numbers.</p>
+  </div>
+</section>
+
+<!-- ============ REMAINING ============ -->
+<section>
+  <div class="sec-head"><span class="sec-num">PART VI</span><h2>What remains</h2></div>
+
+  <div class="grid2">
+    <div class="mini">
+      <h4>One optional GPU run</h4>
+      <p>5-fold ensemble of the headline configuration over the official training set. Uses all 1,318 training rows, averages five models, and gives properly-powered per-BI-RADS threshold fitting. ~3.5 h, plausibly +0.005 to +0.015.</p>
+    </div>
+    <div class="mini">
+      <h4>Grad-CAM figure</h4>
+      <p>Attention maps validated quantitatively against ground-truth lesion boundaries — a measurement the comparator papers cannot make, because they do not hold the masks.</p>
+    </div>
+    <div class="mini">
+      <h4>Tables and figures</h4>
+      <p>Results table, ablation table, dead-end table, comparison table with the protocol column. All four are computed and saved.</p>
+    </div>
+    <div class="mini">
+      <h4>Writing</h4>
+      <p>The experiments are finished. Everything left is on the page, not the GPU.</p>
+    </div>
+  </div>
+
+  <div class="note">
+    <div class="lbl">Superseded, kept for the record</div>
+    <p>An earlier phase used patient-grouped 5-fold CV with a seven-model greedy ensemble at a 0.70 sensitivity floor, reaching lesion AUC <span class="mono">0.9089</span> and 87.0% accuracy. It was retired in favour of the official-split single model because a single model on the published split is directly comparable to the literature, whereas a nested-selection ensemble on a custom protocol is not. The earlier numbers should not be mixed into the current tables.</p>
+  </div>
+</section>
+
+<div class="foot">
+  Build log compiled from the project record. Every figure traces to a saved prediction file or a logged run — <code>officialsplit_all_runs.csv</code>, <code>pooling_ablation_768.csv</code>, and the per-variant test and validation probability files.
+</div>
+
+</div>
+
+</body></html>

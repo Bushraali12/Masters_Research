@@ -16,6 +16,14 @@ Source: `cv_mass_twostream_officialsplit_oof.csv` + `unified_folds_mass.csv`
 Partition: official CBIS-DDSM, 1,318 train / 378 test regions, 0 shared patients.
 Operating point: per-BI-RADS thresholds, 0.90 cohort sensitivity constraint.
 
+**THE HEADLINE MODEL IS A FIVE-MEMBER ENSEMBLE.** `CELL D v2` runs
+`FOLDS = [0,1,2,3,4]`, `SEEDS = [11]`, then `oof = np.mean(parts, axis=0)`
+where `parts` holds the five folds' test probability vectors. One AUC is then
+computed on the averaged probability. This is probability ensembling, NOT the
+mean of five AUCs — say so in the abstract, methods and comparison table, or a
+reviewer will compare it against single-model literature. See the
+"validation rotation" section below for the per-instance numbers.
+
 **Segmentation Dice = 0.9065**  (`oof_dice_official`, 378 test regions)
 
 | Unit | n | AUC [95% CI] | Accuracy [95% CI] | Sens | Spec | Missed |
@@ -67,6 +75,52 @@ Seven-model greedy ensemble (`mass_lesion_errors_clean.csv`, n=1,005 lesions):
 INbreast: Dice 0.880, AUC 0.8935. Cannot confirm or refute.
 
 ---
+
+## Validation rotation — the five instances behind the headline
+
+From the saved output of `CELL D v2` (notebook 07, cell 11). Each instance is
+trained on ~1,054 of the 1,318 official training regions, validated on ~264,
+and scored on the identical 378-region test partition. Seed 11 throughout.
+
+| Instance | best val AUC | test AUC (ROI) | running ensemble |
+|---|---|---|---|
+| fold 0 | 0.9061 | 0.8665 | 0.8665 |
+| fold 1 | 0.9123 | 0.8691 | 0.8771 |
+| fold 2 | 0.9067 | 0.8611 | 0.8816 |
+| fold 3 | 0.8519 | 0.8402 | 0.8750 |
+| fold 4 | 0.8760 | 0.8641 | **0.8769** |
+
+- **Mean of the five AUCs = 0.8602 ± 0.0116** (range 0.8402–0.8691).
+- **Ensemble of the five probability vectors = 0.8769.** Gain **+0.0167**.
+- A mean can never exceed its own maximum, so any text saying the reported
+  score is "the mean of the five" is describing the wrong operation.
+
+Lesion level: single fixed-fold instance 0.8733 vs ensemble 0.9043 (+0.031).
+Per-instance lesion/breast/patient AUCs were never saved — they can be
+recovered from `ckpt_official/twostream_offmask_f{0..4}.npz` on the GPU box
+without retraining, but only while those checkpoints survive.
+
+**Seed averaging is a different operation from fold averaging.** Averaging
+random seeds inside one fold gives **+0.0022** (Table 13 of the manuscript);
+averaging the five validation-rotation folds gives **+0.0167**. The gain comes
+from training-subset diversity, not initialisation noise. These are not in
+conflict, but the manuscript never distinguishes them.
+
+## Ensemble composition differs BETWEEN ladder rungs
+
+| Rung | Cell | Models averaged | AUC (ROI) |
+|---|---|---|---|
+| plain DenseNet-121 | producer cell not in repo | unknown | 0.7994 |
+| + mask-weighted pooling | nb07 cell 9, `TAG=v2_offmask` | **10** (5 folds × seeds 11, 22) | 0.8480 |
+| + wide stream (headline) | nb07 cell 11, `TAG=twostream_offmask` | **5** (5 folds × seed 11) | 0.8769 |
+
+The rung with MORE ensemble members scores LOWER, so the ladder cannot be an
+ensembling artefact — the comparison is biased against the final model and it
+still wins. Use this as the rebuttal. But the rungs are not on a common
+footing and the manuscript must say so.
+
+This also explains the stale "averaged across two seeds" sentence in the
+Introduction: two seeds is true of the mask-pooling rung, not of the headline.
 
 ## Architecture ladder, official test (AUC)
 

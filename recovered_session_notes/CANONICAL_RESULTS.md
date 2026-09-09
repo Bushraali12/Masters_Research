@@ -147,10 +147,68 @@ Decomposition of the 20 net correct calls at ROI: BI-RADS 3 +11, 0 +5, 4 +3, 5 +
 Floor sweep, lesion: 0.70→+0.00 · 0.85→+3.14 · 0.90→+5.83 · 0.95→+8.52
 Patient level is NOT monotone (dips at 0.85).
 
-## Model without BI-RADS anywhere
+## BI-RADS ALONE AS THE CONTROL — answers "is the layer just copying the radiologist?"
 
-Model AUC within BI-RADS 4 (category constant, 99 lesions, 40 malignant): **0.7886**
-BI-RADS used alone as a predictor, lesion level: 0.8508 (model: 0.9043)
+Official test partition, lesion level (n=223, 87 malignant). Recomputed
+2026-09-09 by merging `cv_mass_twostream_officialsplit_oof.csv` with
+`unified_folds_mass.csv`. Reproduces Table 5 and Table 8 exactly.
+
+| Decision rule | AUC | Acc % | Sens | Spec | TP | FP | TN | FN |
+|---|---|---|---|---|---|---|---|---|
+| BI-RADS alone, ≥4 → malignant | 0.8508 | 70.9 | 0.954 | 0.551 | 83 | 61 | 75 | 4 |
+| BI-RADS alone, ≥5 → malignant | 0.8508 | 79.4 | 0.494 | 0.985 | 43 | 2 | 134 | 44 |
+| Model score, single threshold 0.455 | 0.9043 | 79.8 | 0.874 | 0.750 | 76 | 34 | 102 | 11 |
+| **Model + per-BI-RADS thresholds** | **0.9043** | **85.7** | **0.885** | **0.838** | **77** | **22** | **114** | **10** |
+
+ROI level (n=378, 147 malignant), same order:
+BI-RADS≥4 69.0 / 0.932 / 0.537 (FP 107) · BI-RADS≥5 78.3 / 0.476 / 0.978 ·
+model+global 75.7 / 0.884 / 0.675 (FP 75) · model+per-BI-RADS 81.0 / 0.878 /
+0.766 (FP 54). BI-RADS ordinal AUC at ROI = 0.8303, model 0.8769.
+
+**+14.8 accuracy points over the human label at comparable sensitivity**, all of
+it specificity: 22 false positives against 61.
+
+## Incremental value of the image WITH BI-RADS HELD CONSTANT
+
+Within a stratum the category is constant, so any AUC above 0.5 is the image
+alone. Lesion level, official test.
+
+| Stratum | n | malignant | Model AUC |
+|---|---|---|---|
+| BI-RADS 0 | 18 | 2 | 1.0000 |
+| BI-RADS 1 | 1 | 1 | undefined (single class) |
+| BI-RADS 2 | 8 | 0 | undefined (single class) |
+| BI-RADS 3 | 52 | 1 | 0.9804 |
+| **BI-RADS 4** | **99** | **40** | **0.7886** |
+| BI-RADS 5 | 45 | 43 | 0.6047 |
+| **Pooled within-stratum (weighted)** | | | **0.7888** |
+
+BI-RADS 4 is the decisive one: largest stratum, most ambiguous, category
+carries zero information there, and the model still reaches 0.79.
+
+## BI-RADS corruption robustness — CELL 17, notebook 07 cell 24
+
+FULLY RUN, with method and percentile bands. 300 repetitions per rate.
+Thresholds fitted on train with true categories, test categories corrupted.
+Lesion level, accuracy % (gain over the single global threshold, 79.82):
+
+| Category accuracy | Random errors | Adjacent errors |
+|---|---|---|
+| 1.00 | 85.65 (+5.83) | 85.65 (+5.83) |
+| 0.95 | 84.93 (+5.11) | 85.12 (+5.30) |
+| 0.90 | 84.17 (+4.35) | 84.61 (+4.79) |
+| 0.85 | 83.35 (+3.53) | 84.23 (+4.41) |
+| 0.80 | 82.66 (+2.84) | 83.70 (+3.88) |
+| 0.70 | 81.29 (+1.46) | 82.74 (+2.91) |
+| 0.60 | 79.52 (−0.30) | 81.66 (+1.84) |
+| 0.50 | 78.08 (−1.74) | 80.75 (+0.93) |
+
+Break-even: random ~0.60, adjacent still positive at 0.50.
+ROI level: break-even ~0.50 under both models.
+
+The Discussion's "performs well even when 50 % of information was correct" is
+true **only under adjacent errors**. Under random errors the layer stops
+helping below ~0.60. State both or the claim is overstated.
 
 ## Parameters
 

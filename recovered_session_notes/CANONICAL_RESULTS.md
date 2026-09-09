@@ -56,8 +56,8 @@ Seven-model greedy ensemble (`mass_lesion_errors_clean.csv`, n=1,005 lesions):
 | AUC 0.9089 | **0.9078** pooled | build-log transcription drift |
 | accuracy 87 % | **86.0 %** | build-log drift |
 | Dice 0.9062 | 0.9065 (official) or 0.8998 (CV) | |
-| BI-RADS 3 "≈5 % malignant" | 11.1 % full cohort / 16.1 % train / 4.7 % official test ROI | state which cohort |
-| BI-RADS 2 "1 malignant lesion" | 0 malignant in the training partition | |
+| BI-RADS 3 "≈5 % malignant" | see the prevalence table below | always state unit + partition |
+| BI-RADS 2 "1 malignant lesion" | 1 malignant **region** (test only); **0** lesions | unit error, not a data error |
 | mask gain "+0.0705" | **+0.0166 [−0.008, +0.042]** vs GAP | +0.0715 is vs seg_aux |
 | "0.0039" mask-quality | **0.0040** lesion, at most **0.0075** across units | |
 | 215 × 215 | **256 × 256** | |
@@ -107,6 +107,48 @@ Descriptor 4096 = 2 streams × 2 poolings × 1024.
 
 1,696 regions · 1,005 lesions · 932 breasts · 892 patients
 Official: 1,318 / 378 regions; test = 223 lesions, 210 breasts, 201 patients
-Malignant: 46.2 % ROI overall; train 48.3 % vs test 38.9 %
+Malignant: 46.2 % ROI overall; train 48.3 % vs test 38.9 % (gap 9.4 points)
 BENIGN_WITHOUT_CALLBACK: 141
-Table 2 must use **maximum** BI-RADS aggregation (matches Methods), not first-ROI.
+
+## BI-RADS prevalence — ALWAYS STATE THE UNIT AND THE PARTITION
+
+Recomputed 2026-09-09 from `unified_folds_mass.csv`. The same category has
+three different prevalences depending on unit and partition. Quoting one
+without saying which is how the "≈5 %" error got into the Discussion.
+
+| BI-RADS | Lesion, full cohort (= manuscript Table 2) | Lesion, train | Region, train | Region, test |
+|---|---|---|---|---|
+| 0 | 86 / 12 (14.0 %) | 68 / 10 (14.7 %) | 129 / 19 (14.7 %) | 33 / 3 (9.1 %) |
+| 1 | 1 / 1 (100 %) | 0 | 1 / 1 (100 %) | 2 / 2 (100 %) |
+| 2 | 57 / 0 (**0 %**) | 49 / 0 (0 %) | 77 / 0 (0 %) | 14 / **1** (7.1 %) |
+| 3 | 207 / 23 (11.1 %) | 155 / 22 (14.2 %) | 279 / 45 (**16.1 %**) | 85 / 4 (4.7 %) |
+| 4 | 423 / 201 (47.5 %) | 324 / 161 (49.7 %) | 533 / 279 (52.3 %) | 169 / 67 (39.6 %) |
+| 5 | 231 / 225 (97.4 %) | 186 / 182 (97.8 %) | 299 / 293 (**98.0 %**) | 75 / 70 (93.3 %) |
+| Total | 1,005 / 462 (46.0 %) | 782 | 1,318 (48.3 %) | 378 (38.9 %) |
+
+The manuscript's "16 % / 98 %" is the **region level, training partition**
+column — the partition the thresholds are fitted on. It is NOT lesion level.
+
+**Manuscript Table 2 already uses maximum aggregation and is correct on all
+six rows.** An earlier note in this project claimed it used first-ROI. That was
+wrong: `first` gives 2/59/213/422/223 lesions, which matches nothing printed.
+
+**The BI-RADS 2 puzzle, resolved.** Patient `P_01800`, LEFT, lesion 1: the CC
+view is assessed BI-RADS 2, the MLO view of the same lesion is assessed
+BI-RADS 4, pathology MALIGNANT, test split. So BI-RADS 2 holds exactly one
+malignant *region* (test only) and zero malignant *lesions*, because `max`
+moves that lesion into category 4. Both the Methods sentence and Table 2 are
+right; only the word "lesion" in §5.0.4 is wrong.
+
+## CANNOT BE REPRODUCED FROM ANY FILE IN `Result Csv Files/`
+
+- "image-level splitting inflates classification AUC by 0.089" —
+  `officialsplit_all_runs.csv` holds 13 runs, all patient-grouped. There is no
+  image-level-split run anywhere in the repo.
+- "the dataset's own annotation agrees with a radiologist at Dice 0.792" —
+  would require a second independent annotation of CBIS-DDSM. No such file.
+- INbreast Dice 0.880 / AUC 0.8935 — no data ever supplied.
+
+Do not print these three in the manuscript unless the source turns up.
+The only protocol claim of that kind that IS verified is the 9.4-point
+class-balance gap above.

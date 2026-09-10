@@ -10,6 +10,96 @@ numbers. **Never take the Dice from one and the AUC from the other.**
 
 ---
 
+## WHICH CELL PRODUCES WHICH TABLE — check this before editing any cell
+
+Established 2026-09-10 the hard way, after two wrong guesses. The decisive
+test is to grep the notebooks' **saved outputs** for a distinctive value
+(e.g. `0.697` or `85.7`), not to read the cell titles.
+
+| Table / number | Cell | Location | Aggregation |
+|---|---|---|---|
+| **Table 5 (official split, 4 units, CIs)** | **CELL 6** — "COMPLETE OPERATING GRID" | nb08 cell 13 = nb02 cell 20 | `p=("p","mean")` |
+| Table 11 ladder + Table 10 CV | CELL 8 — "THE LAST TWO THINGS" | nb08 cell 18 | mean |
+| Decision-layer decomposition | CELL 13 | nb07 cell 20 | mean |
+| BI-RADS corruption | CELL 17 | nb07 cell 24 | mean |
+| Headline classifier training | CELL D v2 | nb07 cell 11 | — |
+| Official segmentation | nb07 cell 3 | — | — |
+
+**Two traps.**
+
+- **CELL 7** (nb08 cell 15) is **superseded** — its own header says
+  "replaces the provisional breast/patient figures from Cell 7". It also
+  selects **power-4** aggregation, giving lesion AUC 0.8977 / acc 83.9 %.
+  Those are NOT the paper's numbers and never were.
+- **CELL 8 PART C hard-codes the official column.** Line 181 is literally
+  `OFF={"IMAGE":(0.8769,0.810),"LESION":(0.9043,0.857),...}`. It prints 85.7 %
+  because someone typed 85.7 %. It computes nothing. Never read a result off
+  PART C.
+
+## THE BI-RADS 2 THRESHOLD BUG — found 2026-09-10
+
+**Paper's frozen lesion thresholds contain `2: 0.697` while the global is
+0.455.** But §5.0.4 states categories failing MIN_N (20) or MIN_POS (3) are
+pinned to the cohort threshold, and BI-RADS 2 at lesion level has **49
+training lesions and 0 malignant**. It should have been pinned. It wasn't.
+
+**Cause.** In `fit_bir`, every multi-start assigns a value to *all*
+categories; `_asc` then updates only the eligible ones. An ineligible category
+therefore keeps whatever the start gave it — and 0.697 is a leftover
+`rng.uniform(.05,.8)` draw. It won because BI-RADS 2 has no malignant training
+cases, so a higher threshold can only raise training accuracy.
+
+**Worth.** The 8 BI-RADS 2 test lesions are all benign, probabilities 0.179,
+0.204, 0.206, 0.209, 0.259, 0.350, **0.525, 0.533**. Two sit between 0.455 and
+0.697, so τ₂=0.697 converts 2 FP into TN. 2/223 = 0.90 points.
+84.75 + 0.90 = **85.65 ≈ 85.7 %**. Confirmed independently by CELL 13's own
+decomposition line: `2   8   0   0.697   2   2   0   +2`.
+
+**Fix** (applied to `fit_bir` in CELL 6; the same pattern exists in 12 cells):
+
+```python
+el0=[c for c in cats if int((a==c).sum())>=MIN_N and int(y[a==c].sum())>=MIN_POS]
+keep=lambda g,v: (v if g in el0 else g0)
+st=[{g:keep(g,v) for g in cats} for v in (...)]
+st+=[{g:keep(g,u) for g,u in zip(cats,r.uniform(.05,.8,len(cats)))} for _ in range(6)]
+```
+
+**Expected effect** — AUC, sensitivity and missed-cancer counts do NOT move:
+
+| | Before | After |
+|---|---|---|
+| ROI accuracy | 81.0 % | 81.0 % (unchanged, verified) |
+| Lesion accuracy | 85.7 % | ~84.8 % |
+| Lesion sens / missed | 0.885 / 10 of 87 | unchanged |
+| Decision-layer gain, lesion | +5.83 | ~+4.9 |
+| Breast / patient | 84.8 / 85.1 % | to be measured |
+
+## THRESHOLD-SEARCH GRID SENSITIVITY — measured 2026-09-10
+
+`GRID = arange(0.01, 0.995, 0.005)`, `PASSES = 15`, 17 starts (11 systematic
++ 6 random from `default_rng(0)`), `MIN_N=20`, `MIN_POS=3`. All verified in
+code. The sensitivity sweep was **never run before today**.
+
+| Spacing | ROI acc | ROI spec | ROI FP | max abs delta-tau vs 0.005 | Lesion |
+|---|---|---|---|---|---|
+| 0.0025 | 80.95 % | 0.766 | 54 | 0.0025 | unchanged |
+| **0.005** | **80.95 %** | **0.766** | **54** | — | reported |
+| 0.010 | 80.42 % | 0.758 | 56 | 0.0150 | unchanged |
+
+So "grid spacing 0.0025-0.01 left all reported test results unchanged" is
+**false at the 0.01 end at ROI level**. Claim only the 0.0025-0.005 range, or
+report the 0.01 change honestly.
+
+## §5.0.5 AGGREGATION CLAIM IS WRONG
+
+The manuscript says "the arithmetic mean was best at every level" on training
+AUC. CELL 7's PART 2 shows **power-4 beats mean on TRAIN** at lesion
+(0.9099 vs 0.9081), breast (0.9095 vs 0.9070) and patient (0.9077 vs 0.9042).
+The paper's numbers are fine — CELL 6 hard-codes mean — but that sentence must
+be reworded. Mean was chosen; it was not the training-AUC winner.
+
+---
+
 ## A. OFFICIAL SPLIT  ← the headline, matches manuscript Table 6
 
 Source: `cv_mass_twostream_officialsplit_oof.csv` + `unified_folds_mass.csv`

@@ -1,0 +1,22 @@
+==================================================================
+CALCIFICATION — balanced loss + CLAHE  |  OFFICIAL TEST (n=326)
+  threshold 0.70 (chosen for balanced P/R on val)
+==================================================================
+  Dice       mean 0.8761  median 0.8996  std 0.0869
+  IoU        mean 0.7886
+  Precision  mean 0.8741
+  Recall     mean 0.8885
+  |P - R|         0.0145   (smaller = more balanced)
+  pred/GT area    1.02
+
+  distribution:
+    0.00-0.50:    5 (  2%) 
+    0.50-0.70:   11 (  3%) 
+    0.70-0.85:   55 ( 17%) ####
+    0.85-1.01:  255 ( 78%) #####################
+
+  COMPARISON:
+    old weighted CE+Dice : Dice ~0.86 | P 0.45 | R 0.92 | |P-R| 0.47
+    Tversky a=0.7        : Dice 0.879 | P 0.85 | R 0.92 | |P-R| 0.07
+    this (balanced+CLAHE): Dice 0.8761 | P 0.874 | R 0.889 | |P-R| 0.014
+==================================================================

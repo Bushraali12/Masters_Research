@@ -1,0 +1,13 @@
+patient_id,img,msk,source
+P153_R_DM_MLO,/root/autodl-tmp/CDD-IMG/P153_R_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P153_R_DM_MLO_MASK.jpg,CDD-CESM
+P174_L_DM_MLO,/root/autodl-tmp/CDD-IMG/P174_L_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P174_L_DM_MLO_MASK.jpg,CDD-CESM
+P177_L_DM_MLO,/root/autodl-tmp/CDD-IMG/P177_L_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P177_L_DM_MLO_MASK.jpg,CDD-CESM
+P229_R_DM_MLO,/root/autodl-tmp/CDD-IMG/P229_R_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P229_R_DM_MLO_MASK.jpg,CDD-CESM
+P241_R_DM_CC,/root/autodl-tmp/CDD-IMG/P241_R_DM_CC.jpg,/root/autodl-tmp/CDD-MASKS/P241_R_DM_CC_MASK.jpg,CDD-CESM
+P257_R_DM_CC,/root/autodl-tmp/CDD-IMG/P257_R_DM_CC.jpg,/root/autodl-tmp/CDD-MASKS/P257_R_DM_CC_MASK.jpg,CDD-CESM
+P257_R_DM_MLO,/root/autodl-tmp/CDD-IMG/P257_R_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P257_R_DM_MLO_MASK.jpg,CDD-CESM
+P325_R_DM_CC,/root/autodl-tmp/CDD-IMG/P325_R_DM_CC.jpg,/root/autodl-tmp/CDD-MASKS/P325_R_DM_CC_MASK.jpg,CDD-CESM
+P325_R_DM_MLO,/root/autodl-tmp/CDD-IMG/P325_R_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P325_R_DM_MLO_MASK.jpg,CDD-CESM
+P35_L_DM_CC,/root/autodl-tmp/CDD-IMG/P35_L_DM_CC.jpg,/root/autodl-tmp/CDD-MASKS/P35_L_DM_CC_MASK.jpg,CDD-CESM
+P62_R_DM_CC,/root/autodl-tmp/CDD-IMG/P62_R_DM_CC.jpg,/root/autodl-tmp/CDD-MASKS/P62_R_DM_CC_MASK.jpg,CDD-CESM
+P67_R_DM_MLO,/root/autodl-tmp/CDD-IMG/P67_R_DM_MLO.jpg,/root/autodl-tmp/CDD-MASKS/P67_R_DM_MLO_MASK.jpg,CDD-CESM

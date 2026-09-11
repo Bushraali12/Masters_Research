@@ -1,0 +1,7 @@
+lesion,split,n,pct_birads4,mean_subtlety,pct_subtle_12,pct_density4,pct_malignant
+mass,train,1122,38.6,4.0,10.2,7.4,47.5
+mass,val,196,51.0,3.9,14.8,13.3,53.1
+mass,test,378,44.7,3.8,14.6,11.6,38.9
+calcification,train,1283,50.3,3.3,23.1,0.0,36.7
+calcification,val,257,42.0,3.7,16.0,0.0,28.0
+calcification,test,326,54.6,3.3,24.5,0.0,39.6

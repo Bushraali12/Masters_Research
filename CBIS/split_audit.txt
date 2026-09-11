@@ -1,0 +1,40 @@
+======================================================================
+1. OUR SPLIT vs OFFICIAL SPLIT
+======================================================================
+official values: {'train': np.int64(2858), 'test': np.int64(704)}
+ours     values: {'train': np.int64(2405), 'test': np.int64(704), 'val': np.int64(453)}
+
+agreement (our val folded back into train): 3562/3562 = 100.0%
+
+crosstab (rows=official, cols=ours):
+split           test  train  val
+official_split                  
+test             704      0    0
+train              0   2405  453
+
+VERDICT: OUR SPLIT = OFFICIAL SPLIT (val carved from official train)
+
+======================================================================
+2. IS TEST HARDER THAN TRAIN?
+======================================================================
+       lesion split    n  pct_birads4  mean_subtlety  pct_subtle_12  pct_density4  pct_malignant
+         mass train 1122         38.6            4.0           10.2           7.4           47.5
+         mass   val  196         51.0            3.9           14.8          13.3           53.1
+         mass  test  378         44.7            3.8           14.6          11.6           38.9
+calcification train 1283         50.3            3.3           23.1           0.0           36.7
+calcification   val  257         42.0            3.7           16.0           0.0           28.0
+calcification  test  326         54.6            3.3           24.5           0.0           39.6
+
+TRAIN -> TEST shift:
+  mass
+    BI-RADS 4 %     train  38.6  test  44.7   delta +6.1
+    subtlety 1-2 %  train  10.2  test  14.6   delta +4.4
+    density 4 %     train   7.4  test  11.6   delta +4.2
+    malignant %     train  47.5  test  38.9   delta -8.6  <-- test easier
+  calcification
+    BI-RADS 4 %     train  50.3  test  54.6   delta +4.3
+    subtlety 1-2 %  train  23.1  test  24.5   delta +1.4
+    density 4 %     train   0.0  test   0.0   delta +0.0
+    malignant %     train  36.7  test  39.6   delta +2.9
+
+Deltas within +/-8 points = comparable difficulty = evaluation is FAIR.

@@ -1,0 +1,36 @@
+data:
+  batch_size: 16
+  grayscale: true
+  image_size: 224
+  num_workers: 2
+  raw_dir: data/raw/cbis_ddsm
+  sampler: weighted
+  splits_csv: data/processed/all_lesions_seg_crops_patientwise.csv
+  use_clahe: false
+eval:
+  tta: false
+model:
+  backbone_name: tf_efficientnetv2_m.in21k_ft_in1k
+  dropout: 0.1
+  mamba_d_state: 16
+  mamba_dim: 256
+  mamba_layers: 6
+  out_index: -1
+  pretrained: true
+output:
+  dir: outputs/mass_mamba
+seed: 42
+train:
+  accum_steps: 1
+  amp: true
+  early_stop_patience: 8
+  epochs: 50
+  focal_alpha: 0.25
+  focal_gamma: 2.0
+  freeze_epochs: 3
+  grad_clip: 1.0
+  loss: focal
+  lr_backbone: 3.0e-05
+  lr_head: 0.0001
+  scheduler: cosine
+  weight_decay: 0.0001

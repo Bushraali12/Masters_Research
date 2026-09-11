@@ -1,0 +1,6 @@
+category,threshold,eligible
+0,0.595,True
+2,0.42,False
+3,0.6,True
+4,0.42,True
+5,0.01,True

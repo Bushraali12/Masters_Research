@@ -1,0 +1,41 @@
+======================================================================
+CALCIFICATION — OFFICIAL CBIS-DDSM TEST SET   (n=326)
+  Tversky loss (alpha=0.7 on FP) | threshold 0.50 tuned on validation
+======================================================================
+  Dice        mean 0.8791   median 0.9024   std 0.0835
+  IoU         mean 0.7928   median 0.8222
+  Precision   mean 0.8532
+  Recall      mean 0.9183
+  pred/GT area ratio 1.08   (1.00 = same size as ground truth)
+
+  Dice distribution:
+    0.00-0.50:    2 (  1%) 
+    0.50-0.70:   11 (  3%) 
+    0.70-0.85:   55 ( 17%) ####
+    0.85-1.01:  258 ( 79%) ######################
+
+  Dice by radiologist subtlety (1 = hardest to see):
+    subtlety 1:  Dice 0.8649   n=24
+    subtlety 2:  Dice 0.8893   n=56
+    subtlety 3:  Dice 0.8901   n=104
+    subtlety 4:  Dice 0.8708   n=76
+    subtlety 5:  Dice 0.8678   n=66
+
+  Dice by pathology:
+    BENIGN                    Dice 0.8997   n=130
+    BENIGN_WITHOUT_CALLBACK   Dice 0.8566   n=67
+    MALIGNANT                 Dice 0.8701   n=129
+
+  worst 10 Dice: [0.405, 0.452, 0.509, 0.519, 0.538, 0.548, 0.602, 0.637, 0.655, 0.655]
+
+----------------------------------------------------------------------
+  ABLATION — effect of the loss change
+----------------------------------------------------------------------
+  old loss (weighted CE+Dice, w=[1,2]) : Dice ~0.86 | P 0.45 | R 0.92 | area 2.00
+  Tversky @ thr 0.50                   : Dice 0.8791 | P 0.853 | R 0.918 | area 1.08
+  Tversky @ thr 0.50 (tuned)          : Dice 0.8791 | P 0.853 | R 0.918 | area 1.08
+======================================================================
+
+
+
+viulize them and then train on mass and cal togather remove these 10 which are very bad cases and similarly wacth for the mass where it goes bad 

@@ -1,0 +1,1 @@
+{"cv": [["power", 3], ["power", 2], ["blend", 0.4], ["power", 2], ["power", 2]], "official": [["power", 4]]}

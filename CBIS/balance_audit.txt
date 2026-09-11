@@ -1,0 +1,51 @@
+==========================================================================
+1. CLASS BALANCE (0 = benign, 1 = malignant)
+==========================================================================
+
+ MASS   total n=1696
+   split    n     benign  malignant   %malig   ratio(ben:mal)
+   train   1122     589       533     47.5%    1.11:1
+   val      196      92       104     53.1%    0.88:1
+   test     378     231       147     38.9%    1.57:1
+   OVERALL 1696     912       784     46.2%    1.16:1
+
+ CALCIFICATION   total n=1866
+   split    n     benign  malignant   %malig   ratio(ben:mal)
+   train   1283     812       471     36.7%    1.72:1
+   val      257     185        72     28.0%    2.57:1
+   test     326     197       129     39.6%    1.53:1
+   OVERALL 1866    1194       672     36.0%    1.78:1
+
+  READ IT: ratios near 1.5:1 are mild imbalance (handled by focal loss +
+  weighted sampling, which you already use). Above ~3:1 would be severe.
+
+ mass vs calcification malignant rate:
+   mass           46.2% malignant
+   calcification  36.0% malignant
+
+==========================================================================
+2. WHICH METADATA IS ACTUALLY USABLE?
+==========================================================================
+
+ MASS
+   subtlety      present  1696/1696 (100.0%)   values=[0, 1, 2, 3, 4, 5]  <-- WARNING: 2 values outside valid range [1,5]
+   density       present  1696/1696 (100.0%)   values=[1.0, 2.0, 3.0, 4.0]
+   assessment    present  1696/1696 (100.0%)   values=[0, 1, 2, 3, 4, 5]
+   mass_shape    present  1692/1696 ( 99.8%)   20 categories
+   mass_margins  present  1636/1696 ( 96.5%)   19 categories
+   calc_type     present     0/1696 (  0.0%)  <-- UNUSABLE (all missing)
+   calc_dist     present     0/1696 (  0.0%)  <-- UNUSABLE (all missing)
+   pathology     present  1696/1696 (100.0%)   3 categories
+
+ CALCIFICATION
+   subtlety      present  1866/1866 (100.0%)   values=[1, 2, 3, 4, 5]
+   density       present     0/1866 (  0.0%)  <-- UNUSABLE (all missing)
+   assessment    present  1866/1866 (100.0%)   values=[0, 2, 3, 4, 5]
+   mass_shape    present     0/1866 (  0.0%)  <-- UNUSABLE (all missing)
+   mass_margins  present     0/1866 (  0.0%)  <-- UNUSABLE (all missing)
+   calc_type     present  1842/1866 ( 98.7%)   47 categories
+   calc_dist     present  1432/1866 ( 76.7%)   9 categories
+   pathology     present  1866/1866 (100.0%)   3 categories
+
+  >> only use columns marked usable, with values inside the valid range.
+  >> anything showing out-of-range values is corrupted - do NOT report it.

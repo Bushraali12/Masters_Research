@@ -1,0 +1,67 @@
+{
+  "chosen": [
+    "twostream",
+    "twostream_calcpre",
+    "twostream_1seed"
+  ],
+  "how": "prob",
+  "train_auc": 0.9038790033126094,
+  "results": {
+    "IMAGE | OLD  two-stream + one threshold": {
+      "auc": 0.8769031422092647,
+      "acc": 0.8015873015873016,
+      "sens": 0.8231292517006803,
+      "spec": 0.7878787878787878,
+      "fn": 26
+    },
+    "IMAGE | OLD  two-stream + Novelty 2": {
+      "auc": 0.8769031422092647,
+      "acc": 0.828042328042328,
+      "sens": 0.8299319727891157,
+      "spec": 0.8268398268398268,
+      "fn": 25
+    },
+    "IMAGE | NEW  selected score + one threshold": {
+      "auc": 0.8777571634714492,
+      "acc": 0.8148148148148148,
+      "sens": 0.7482993197278912,
+      "spec": 0.8571428571428571,
+      "fn": 37
+    },
+    "IMAGE | NEW  selected score + Novelty 2  <== FINAL": {
+      "auc": 0.8777571634714492,
+      "acc": 0.8306878306878307,
+      "sens": 0.782312925170068,
+      "spec": 0.8614718614718615,
+      "fn": 32
+    },
+    "LESION | OLD  two-stream + one threshold": {
+      "auc": 0.9043272481406356,
+      "acc": 0.852017937219731,
+      "sens": 0.8160919540229885,
+      "spec": 0.875,
+      "fn": 16
+    },
+    "LESION | OLD  two-stream + Novelty 2": {
+      "auc": 0.9043272481406356,
+      "acc": 0.852017937219731,
+      "sens": 0.7816091954022989,
+      "spec": 0.8970588235294118,
+      "fn": 19
+    },
+    "LESION | NEW  selected score + one threshold": {
+      "auc": 0.9040736984448952,
+      "acc": 0.8475336322869955,
+      "sens": 0.8275862068965517,
+      "spec": 0.8602941176470589,
+      "fn": 15
+    },
+    "LESION | NEW  selected score + Novelty 2  <== FINAL": {
+      "auc": 0.9040736984448952,
+      "acc": 0.8475336322869955,
+      "sens": 0.8735632183908046,
+      "spec": 0.8308823529411765,
+      "fn": 11
+    }
+  }
+}

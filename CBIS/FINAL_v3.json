@@ -1,0 +1,101 @@
+{
+  "floor": 0.9,
+  "aggregation": {
+    "IMAGE": "mean",
+    "LESION": "power",
+    "BREAST": "power",
+    "PATIENT": "power"
+  },
+  "ladder": {
+    "baseline  plain DenseNet-121|IMAGE": 0.7994227994227996,
+    "baseline  plain DenseNet-121|LESION": 0.7991041244083841,
+    "baseline  plain DenseNet-121|BREAST": 0.788329411764706,
+    "baseline  plain DenseNet-121|PATIENT": 0.7878296146044624,
+    "N1a       + mask-weighted pooling|IMAGE": 0.848013664340195,
+    "N1a       + mask-weighted pooling|LESION": 0.8607167004732927,
+    "N1a       + mask-weighted pooling|BREAST": 0.8530823529411766,
+    "N1a       + mask-weighted pooling|PATIENT": 0.8547667342799189,
+    "N1b       + two-stream  [FINAL]|IMAGE": 0.8769031422092647,
+    "N1b       + two-stream  [FINAL]|LESION": 0.8977349560513861,
+    "N1b       + two-stream  [FINAL]|BREAST": 0.8944000000000001,
+    "N1b       + two-stream  [FINAL]|PATIENT": 0.8964503042596349
+  },
+  "results": {
+    "IMAGE": {
+      "rule": "mean",
+      "par": null,
+      "auc": 0.8769031422092647,
+      "acc": 0.8095238095238095,
+      "sens": 0.8775510204081632,
+      "spec": 0.7662337662337663,
+      "fp": 54,
+      "fn": 18,
+      "auc_ci": [
+        0.8249092646022745,
+        0.919064454647537
+      ],
+      "acc_ci": [
+        0.7629299832899273,
+        0.8567640984195402
+      ],
+      "acc_one_threshold": 0.7566137566137566
+    },
+    "LESION": {
+      "rule": "power",
+      "par": 4,
+      "auc": 0.8977349560513861,
+      "acc": 0.8385650224215246,
+      "sens": 0.8850574712643678,
+      "spec": 0.8088235294117647,
+      "fp": 26,
+      "fn": 10,
+      "auc_ci": [
+        0.8504975391615802,
+        0.9351568148014312
+      ],
+      "acc_ci": [
+        0.7882815419105742,
+        0.8854625550660793
+      ],
+      "acc_one_threshold": 0.8026905829596412
+    },
+    "BREAST": {
+      "rule": "power",
+      "par": 4,
+      "auc": 0.8944000000000001,
+      "acc": 0.8333333333333334,
+      "sens": 0.8470588235294118,
+      "spec": 0.824,
+      "fp": 22,
+      "fn": 13,
+      "auc_ci": [
+        0.8466287383855983,
+        0.9331657218719753
+      ],
+      "acc_ci": [
+        0.7788461538461539,
+        0.8851674641148325
+      ],
+      "acc_one_threshold": 0.8047619047619048
+    },
+    "PATIENT": {
+      "rule": "power",
+      "par": 4,
+      "auc": 0.8964503042596349,
+      "acc": 0.8159203980099502,
+      "sens": 0.8470588235294118,
+      "spec": 0.7931034482758621,
+      "fp": 24,
+      "fn": 13,
+      "auc_ci": [
+        0.8491557557903513,
+        0.9378211281819608
+      ],
+      "acc_ci": [
+        0.7611940298507462,
+        0.8656716417910447
+      ],
+      "acc_one_threshold": 0.8059701492537313
+    }
+  }
+}

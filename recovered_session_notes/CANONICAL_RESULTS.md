@@ -354,3 +354,112 @@ right; only the word "lesion" in §5.0.4 is wrong.
 Do not print these three in the manuscript unless the source turns up.
 The only protocol claim of that kind that IS verified is the 9.4-point
 class-balance gap above.
+
+---
+
+# EXTERNAL VALIDATION ON DMID — SEGMENTATION, SETTLED 2026-09-15
+
+Reviewer Major 6. Everything below was measured, not assumed. Where a number
+was wrong in an earlier message it is marked so, because the wrong ones keep
+coming back.
+
+## THE FOUR NUMBERS
+
+Identical frozen weights (`ckpt_official/seg_dsaspp_mass_official_fold0..4.pth`),
+identical THR = 0.5, identical 5-fold probability-map averaging, no TTA.
+
+| Row | Configuration | Dice mean | Dice median | Precision | Recall | empty masks |
+|---|---|---|---|---|---|---|
+| **A** | DMID, frozen, no adaptation | **0.4868** | 0.5278 | 0.802 | 0.399 | 21/319 |
+| **A'** | DMID, frozen + input standardisation | **0.7304** | 0.8081 | 0.849 | 0.675 | 0/319 |
+| ref | CBIS official test, raw | **0.9065** | 0.9254 | 0.922 | 0.898 | 0/378 |
+| ctrl | CBIS official test + standardisation | **0.9015** | 0.9207 | 0.912 | 0.900 | 0/378 |
+
+In-domain control moved **-0.0050**. External moved **+0.2437**.
+
+Report **A and A' together**. A alone understates the method; A' alone looks
+like fishing. The pair is the result.
+
+## WHAT THE STANDARDISATION IS
+
+Per-image affine rescale of the post-CLAHE 256x256 input to the mean and sd of
+the **CBIS official TRAIN partition**: mean 0.5201, sd 0.1112 (n = 500).
+
+```python
+def standardise(x):            # x = clahe.apply(resize(img,256)).astype(f32)/255
+    s = x.std()
+    if s < 1e-6: return x
+    return np.clip((x - x.mean()) * (SD_REF / s) + MU_REF, 0.0, 1.0)
+```
+
+No DMID label, no DMID performance feedback, no threshold search. Deterministic
+function of one image plus frozen training constants.
+
+**Why it is needed, in one sentence:** CLAHE with `clipLimit=2.0` only ever
+*adds* local contrast and can never remove it, so it does not standardise a
+source whose dynamic range already exceeds the training domain's. DMID walks
+straight through it.
+
+## THE EVIDENCE THAT IT IS NORMALISATION, NOT A HACK
+
+1. **Precision rose with recall** (0.802 -> 0.849 and 0.399 -> 0.675). Mask
+   inflation lowers precision. This raised it.
+2. **21 blank predictions went to 0.** Those were images the frozen net scored
+   entirely below 0.5. A broken input was fixed.
+3. **In-domain control is inert**: -0.0050 on 378 cases.
+
+## THE DIAGNOSIS THAT LED THERE
+
+| Measurement | CBIS | DMID |
+|---|---|---|
+| post-CLAHE input mean | 0.5146 | 0.4940 |
+| post-CLAHE within-image **sd** | 0.1091 | **0.1881 (1.71x)** |
+| p1 -> p99 spread | 0.288-0.744 = 0.456 | 0.146-0.874 = **0.728** |
+| Laplacian variance (post-CLAHE) | 0.00341 | **0.01779 (5.21x)** |
+| native crop window / 512 | median **1.02** (79 down / 71 up) | median **1.69** (255 down / 64 up) |
+
+Frozen predictions were **correctly located and too small**: 94.7 % of predicted
+pixels fell inside the reference contour, centroid offset median 15.4 px of 256
+(6.0 %), and dilating the prediction raised Dice monotonically 0.521 -> 0.6805 at
+27 px without plateauing.
+
+## HYPOTHESES TESTED AND KILLED — do not raise these again
+
+| Hypothesis | Test | Result |
+|---|---|---|
+| Crops built with wrong geometry | side = 1.6x longest bbox, both builders | **identical** |
+| CLAHE applied in the wrong order | training does resize(256) THEN CLAHE; DMID-2 same | **identical** |
+| Coordinate frame wrong | metadata (x,y) inside mask blob | **(col,row), 12/12** |
+| DMID GT not cleaned like CBIS GT | `clean_mass_mask` would change area by | **x1.004 — no effect** |
+| A 16-bit DMID source was ignored | BitsStored 8, photo RGB, no VOI, no other image files | **none exists** |
+| DMID contours drawn generously | mask eq. radius / metadata radius | **median 0.91, area 0.84 — smaller, not larger** |
+| Resolution mismatch is the cause | degrade DMID to CBIS sampling rate | **sd 1.71 -> 1.70, no change** |
+| Dice computed differently | 256, INTER_NEAREST GT, >127, (2tp+1)/(2tp+fp+fn+1), 5-fold averaged, no TTA | **identical both sides** |
+
+**Lesion fraction (0.2281 vs 0.2353) is NOT evidence of anything.** The crop side
+is defined as 1.6x the mask bbox, so lesion fraction is pinned by construction
+in both datasets. It was cited as evidence once; it is a tautology.
+
+## A SEPARATE REPORTABLE FINDING — TRACING CONVENTION
+
+| | n | mask area px | fill | circularity | solidity |
+|---|---|---|---|---|---|
+| CBIS | 400 | 59,724 | 0.649 | **0.494** | **0.885** |
+| DMID | 319 | 64,189 | 0.754 | **0.740** | **0.969** |
+
+Same size, different shape. CBIS masses are traced along their margins; DMID
+contours are smooth and near-convex. This bounds achievable external Dice
+independently of segmentation quality. Belongs in Limitations.
+
+## PATIENT GROUPING IS NOT RECOVERABLE IN DMID
+
+`StudyDate` is 20220513 for every file (anonymisation export date), `StudyTime`
+increments by write order, and report text repeats because normal reports are
+boilerplate. Group by **image**. Row A does no fitting on DMID, so it is
+unaffected.
+
+## WHAT DMID IS
+
+319 mass lesions, 243 images, BI-RADS coverage 323/323, agreement between
+`class` and `BI-RADS >= 4` = **0.944** — the one dataset surveyed where
+Novelty 2 is not circular (INbreast is 1.000, i.e. untestable).

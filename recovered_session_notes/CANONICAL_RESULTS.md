@@ -463,3 +463,117 @@ unaffected.
 319 mass lesions, 243 images, BI-RADS coverage 323/323, agreement between
 `class` and `BI-RADS >= 4` = **0.944** — the one dataset surveyed where
 Novelty 2 is not circular (INbreast is 1.000, i.e. untestable).
+
+---
+
+# ONE MODEL vs FIVE MODELS — OFFICIAL SPLIT, SETTLED 2026-09-15
+
+Raised by the supervisor: "don't use five different models, use one." These are
+the verified numbers. Produced by `CELL TABLE1`, saved as
+`single_vs_five_official.csv`.
+
+## FIRST, THE THING THAT KEEPS GETTING CONFUSED
+
+**THE TEST SET NEVER CHANGES.** All five folds test on the SAME 378 official
+regions. Notebook 07 cell 3 asserts it and would crash otherwise:
+
+```python
+assert ((r == "test") == _te).all(), "role_of%d test != official test" % k
+```
+
+Only the train/val line inside the **1,318 training regions** moves. The
+rotation exists to produce out-of-fold predictions on all 1,318 (= 782 lesions),
+which is what the BI-RADS thresholds are fitted on. It is NOT an ensemble device.
+
+## HOW "ONE MODEL" WAS COMPUTED
+
+Each of the five models predicts **all 378 test regions alone**; each is scored
+separately; the five scores are then averaged. That is NOT the ensemble.
+
+| | what is averaged | when |
+|---|---|---|
+| one model (mean of 5) | the **scores** | after scoring |
+| five models averaged | the **probabilities** | before scoring |
+
+## THE TABLE — floor 0.90, thresholds fitted once on the OOF and frozen
+
+S1 = one threshold for everyone. S2 = per-BI-RADS thresholds (Novelty 2).
+
+| unit | n | config | AUC | S1 acc | S2 acc | gain | S2 sens | S2 spec | S2 missed |
+|---|---|---|---|---|---|---|---|---|---|
+| ROI | 378 | one model | 0.8602 ± 0.0103 | 74.4 ± 1.7 | **78.3 ± 1.9** | +3.86 | 0.865 ± .020 | 0.731 ± .032 | 19.8 ± 3.0 |
+| ROI | 378 | five models | **0.8769** | 75.7 | **81.0** | +5.29 | 0.878 | 0.766 | 18 |
+| LESION | 223 | one model | 0.8885 ± 0.0092 | 78.9 ± 2.8 | **83.1 ± 1.5** | +4.22 | 0.869 ± .036 | 0.807 ± .026 | 11.4 ± 3.1 |
+| LESION | 223 | five models | **0.9043** | 79.8 | **84.8** | +4.93 | 0.885 | 0.824 | 10 |
+| BREAST | 210 | one model | 0.8850 ± 0.0102 | 77.5 ± 3.1 | **82.3 ± 1.5** | +4.76 | 0.868 ± .036 | 0.792 ± .027 | 11.2 ± 3.1 |
+| BREAST | 210 | five models | **0.9016** | 78.6 | **83.8** | +5.24 | 0.882 | 0.808 | 10 |
+| PATIENT | 201 | one model | 0.8868 ± 0.0122 | 77.8 ± 3.1 | **82.3 ± 1.6** | +4.48 | 0.868 ± .036 | 0.790 ± .030 | 11.2 ± 3.1 |
+| PATIENT | 201 | five models | **0.9041** | 79.1 | **84.1** | +4.98 | 0.882 | 0.810 | 10 |
+
+**Segmentation:** one model Dice **0.8972 ± 0.0040** (per fold 0.8991, 0.8892,
+0.8985, 0.9003, 0.8987); five models averaged **0.9065**.
+
+## COST OF DROPPING TO ONE MODEL
+
+| unit | AUC | S2 accuracy |
+|---|---|---|
+| ROI | −0.0167 | −2.7 pts |
+| LESION | −0.0158 | −1.7 pts |
+| BREAST | −0.0166 | −1.5 pts |
+| PATIENT | −0.0173 | −1.8 pts |
+| Segmentation | — | Dice −0.0093 |
+
+**Novelty 2 survives everywhere**: +3.86 to +4.76 with one model, +4.93 to +5.29
+with five.
+
+## THE FITTED THRESHOLDS (floor 0.90, eligible BI-RADS [0,3,4,5] at every unit)
+
+| unit | S1 global | S2 per category |
+|---|---|---|
+| ROI | 0.440 | {0: 0.515, 1: 0.44, 2: 0.44, 3: 0.495, 4: 0.455, 5: 0.01} |
+| LESION | 0.455 | {0: 0.52, 2: 0.455, 3: 0.575, 4: 0.465, 5: 0.01} |
+| BREAST | 0.445 | {0: 0.52, 2: 0.445, 3: 0.575, 4: 0.465, 5: 0.01} |
+| PATIENT | 0.445 | {0: 0.52, 2: 0.445, 3: 0.575, 4: 0.465, 5: 0.01} |
+
+Categories 1 and 2 equal the global threshold at every unit — **independent
+confirmation that the tau_2 fix works.**
+
+## WHY THE FOLD ROTATION MUST STAY (this is not about ensembling)
+
+Same single model, only the threshold-fitting set differs:
+
+| thresholds fitted on | LESION S2 acc | sd | gain |
+|---|---|---|---|
+| that fold's own validation set (156 lesions) | 79.7 % | **± 3.1** | +2.06 |
+| the full out-of-fold set (782 lesions) | **83.1 %** | **± 1.5** | +4.22 |
+
+Fitting on 782 instead of 156 buys **+3.4 points and halves the variance**. With
+the 156-lesion fit, Novelty 2 gave **zero or negative gain in 2 of 5 folds**
+(fold 0 −2.2, fold 3 0.0).
+
+**Line to give the supervisor:** the five models exist to produce unbiased
+out-of-fold predictions for calibrating the decision layer (nested CV), not to
+ensemble; a single model is used at inference.
+
+## THREE TRAPS — do not walk into these
+
+1. **Never report the "+8.52 pts" from fold 1 (C*).** Its S2 (83.9 %) is BELOW
+   the five-model 84.8 %. The gap is large only because its S1 baseline is
+   depressed (75.3 %), since one global threshold fits fold 1's probability
+   scale badly. **The honest gain is +4.2 to +4.9.**
+2. **tau_5 = 0.01 is the minimum of the search grid** (`arange(0.01, 0.995, 0.005)`).
+   BI-RADS 5 is therefore called malignant regardless of model output. Defensible
+   clinically, but it is a boundary solution and must be stated, not hidden.
+3. **The 0.90 floor constrains FITTING, not test performance.** Five-model test
+   sensitivity is 0.885 at lesion level. Write "fitted under a 0.90 sensitivity
+   floor", never "achieving 0.90".
+
+## ALSO WORTH KNOWING
+
+S2 does not win by raising sensitivity. At lesion level it trades sensitivity
+**down** (0.876 -> 0.869 for one model) for specificity **up** (0.734 -> 0.807).
+Same pattern at breast and patient. The gain is a specificity gain.
+
+Missed-cancer count under one model varies by about +/- 3 lesions across the five
+models (11.4 ± 3.1 at lesion level). That instability is a real argument for
+reporting mean ± sd rather than a single fold.

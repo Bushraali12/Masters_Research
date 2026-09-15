@@ -577,3 +577,20 @@ Same pattern at breast and patient. The gain is a specificity gain.
 Missed-cancer count under one model varies by about +/- 3 lesions across the five
 models (11.4 ± 3.1 at lesion level). That instability is a real argument for
 reporting mean ± sd rather than a single fold.
+
+---
+
+# FOLD-ROLE COLUMNS — WHICH ONE IS ACTUALLY CROSS-VALIDATION
+
+Checked directly in `unified_folds_mass.csv` on 2026-09-15. Getting this wrong
+silently produces a "cross-validation" table that is not cross-validation.
+
+| prefix | test size per fold | tests identical? | union | what it is |
+|---|---|---|---|---|
+| `role_of0..4` | 378 each | **YES** | 378 | official split; train/val rotates, test frozen |
+| `role_f0..4` | 378 each | **YES** | 378 | **also a frozen 378 test set — NOT cross-validation** |
+| `role_cv0..4` | 339/340/339/339/339 | **NO**, zero overlap | **1,696** | **the real patient-grouped 5-fold CV** |
+
+**Table 16 of the manuscript (full-cohort CV) must use `role_cv`, never
+`role_f`.** The give-away is the reported n: 1,696 / 1,005 / 932 / 892 are
+full-cohort counts, so only `role_cv` can produce them.

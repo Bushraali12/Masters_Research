@@ -349,7 +349,9 @@ right; only the word "lesion" in §5.0.4 is wrong.
   image-level-split run anywhere in the repo.
 - "the dataset's own annotation agrees with a radiologist at Dice 0.792" —
   would require a second independent annotation of CBIS-DDSM. No such file.
-- INbreast Dice 0.880 / AUC 0.8935 — no data ever supplied.
+- ~~INbreast Dice 0.880 / AUC 0.8935 — no data ever supplied.~~ **RETRACTED
+  2026-09-16: the data WAS supplied. `INB/inbreast_predictions.csv` in the repo
+  reproduces both exactly (0.8802 and 0.8935). See the INbreast section below.**
 
 Do not print these three in the manuscript unless the source turns up.
 The only protocol claim of that kind that IS verified is the 9.4-point
@@ -594,3 +596,85 @@ silently produces a "cross-validation" table that is not cross-validation.
 **Table 16 of the manuscript (full-cohort CV) must use `role_cv`, never
 `role_f`.** The give-away is the reported n: 1,696 / 1,005 / 932 / 892 are
 full-cohort counts, so only `role_cv` can produce them.
+
+---
+
+# EXTERNAL VALIDATION ON INbreast — SETTLED 2026-09-16
+
+Source of truth: `INB/inbreast_predictions.csv` in this repo (116 rows, carries
+per-lesion `dice` and classifier `prob`). Everything below is computed from it.
+**No GPU work was required.** An earlier note calling these numbers
+unreproducible was wrong — the file was pushed after that note was written.
+
+## COHORT
+
+116 mass ROIs | 107 images | **54 breasts** | **50 patients** | 64.7 % malignant
+(CBIS test is 39.0 %, so INbreast is **25.7 points higher prevalence**).
+Patient id is the filename hash, field 1 of `<fileid>_<hash>_MG_<side>_<view>_ANON.dcm`.
+
+## ROW A — FROZEN (segmenter, classifier and thresholds all transferred unchanged)
+
+| | Dice | AUC | accuracy | sens | spec | missed |
+|---|---|---|---|---|---|---|
+| ROI (n=116) | **0.8802** mean / 0.8914 median | 0.8898 | 78.4 % | 0.933 | 0.512 | 5 |
+| breast (n=54) | | **0.8935** | 81.5 % | 0.944 | 0.556 | 2 |
+| patient (n=50) | | 0.8876 | 84.0 % | 0.943 | 0.600 | 2 |
+
+CBIS internal reference: Dice 0.9065, ROI AUC 0.8769, breast 0.9016, patient 0.9041.
+**Dice drops only 0.0263 and ROI AUC RISES 0.0129.** Zero segmentation failures
+(0 of 116 below Dice 0.30). Contrast with DMID, which collapsed to 0.4868.
+
+## ROW B — RE-FITTED (single threshold re-optimised on INbreast)
+
+| unit | threshold | accuracy | sens | spec | gain over Row A |
+|---|---|---|---|---|---|
+| ROI | 0.475 | 81.0 % | 0.880 | 0.683 | +2.6 |
+| breast | 0.530 | 83.3 % | 0.833 | 0.833 | +1.9 |
+| patient | 0.440 | 84.0 % | 0.943 | 0.600 | **+0.0** |
+
+**Re-fitting buys almost nothing.** The frozen operating point is near-optimal
+on a cohort 25.7 prevalence points away. That is the strongest sentence
+available for Major 6.
+
+The frozen thresholds run high-sensitivity / low-specificity (0.933-0.944 vs
+0.512-0.600), which is the expected direction for a threshold calibrated on
+lower prevalence and applied to higher prevalence — the same mechanism already
+documented for the sensitivity-floor shortfall on the CBIS test partition.
+
+## NOVELTY 2 IS NOT TESTABLE ON INbreast — CONFIRMED BY MEASUREMENT
+
+```
+label      0   1
+birads
+2         28   0
+3         13   0
+4          0  21
+5          0  46
+6          0   8
+```
+
+**Agreement 1.000. BI-RADS alone scores AUC 1.0000 and 100 % accuracy.**
+INbreast has no pathology; its labels are derived from BI-RADS by the 1-3 / 4-6
+convention, so the category IS the label. Conditioning the decision on BI-RADS
+is perfectly circular.
+
+Transferring the CBIS per-BI-RADS thresholds to INbreast breasts gives 83.3 %
+accuracy — **worse than BI-RADS alone at 100 %**, which is the giveaway.
+
+Consequence: report Dice and classifier AUC as external evidence, and report
+the circularity as the reason the decision layer cannot be validated here. The
+classifier AUC measures agreement with a radiologist's assessment, NOT with
+pathology, and the manuscript must say so.
+
+## WHICH EXTERNAL SET DOES WHAT
+
+| | INbreast | DMID |
+|---|---|---|
+| pixel contours | yes, 116 masses | yes, 319 masses |
+| frozen Dice | **0.8802** | 0.4868 (0.7304 standardised) |
+| label independent of BI-RADS | **no — agreement 1.000** | **yes — agreement 0.944** |
+| validates Novelty 1 | **yes** | yes |
+| validates Novelty 2 | **no, circular** | **yes, the only candidate** |
+
+INbreast answers Major 6 for the segmenter and classifier. DMID is the only
+surveyed dataset where the decision layer could be tested non-circularly.
